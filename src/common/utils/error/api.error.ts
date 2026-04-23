@@ -46,6 +46,10 @@ class ApiError extends Error {
 	static invalid(message: string = "Invalid"): ApiError {
 		return new ApiError(message, StatusCodes.BAD_REQUEST, true, "InvalidError");
 	}
+
+	static conflict(message: string = "Conflict"): ApiError {
+		return new ApiError(message, StatusCodes.CONFLICT, true, "ConflictError");
+	}
 }
 
 export { ApiError };
