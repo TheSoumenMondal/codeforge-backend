@@ -32,6 +32,20 @@ class UserController {
 			error: null,
 		});
 	});
+
+	getProfile = expressAsyncHandler(async (req, res) => {
+		const userId = req.user?.id;
+		if (!userId) {
+			throw ApiError.unauthorized("You are not authenticated.");
+		}
+		const userProfile = await this.userService.getProfile(userId);
+		res.status(StatusCodes.OK).json({
+			success: true,
+			data: userProfile,
+			message: "User profile retrieved successfully",
+			error: null,
+		});
+	});
 }
 
 export default UserController;

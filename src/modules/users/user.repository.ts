@@ -28,6 +28,15 @@ class UserRepository {
 
 		return newUser ?? null;
 	}
+
+	async getUserById(userId: string) {
+		const existingUser = await db
+			.select()
+			.from(user)
+			.where(eq(user.id, userId))
+			.limit(1);
+		return existingUser[0] ?? null;
+	}
 }
 
 export default UserRepository;

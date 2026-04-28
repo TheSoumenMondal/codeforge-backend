@@ -22,6 +22,14 @@ class UserService {
 		}
 		return newUser;
 	}
+
+	async getProfile(userId: string) {
+		const userProfile = await this.userRepository.getUserById(userId);
+		if (!userProfile) {
+			throw ApiError.notFound("User not found");
+		}
+		return userProfile;
+	}
 }
 
 export default UserService;
