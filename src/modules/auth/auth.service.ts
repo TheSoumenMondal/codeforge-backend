@@ -3,6 +3,7 @@ import { passwordUtils } from "../../common/utils/security/hash-utils.js";
 import { tokenUtils } from "../../common/utils/security/token-utils.js";
 import type UserRepository from "../users/user.repository.js";
 import type AuthRepository from "./auth.repository.js";
+import type { LoginDto } from "./dto/login.dto.js";
 import type { SignupDto } from "./dto/signup.dto.js";
 
 class AuthService {
@@ -52,7 +53,38 @@ class AuthService {
 		};
 	}
 
-	login(email: string, password: string) {}
+	async login(data: LoginDto) {
+		const { email, password } = data;
+		const user = await this.userRepository.getUserByEmail(email);
+		if (!user) {
+			throw ApiError.notFound(`User not found`);
+		}
+		const userId = user.id;
+		const passwordAccountData =
+			await this.authRepository.getPasswordAccountByUserId(userId);
+		if (!passwordAccountData) {
+			throw ApiError.notFound(`Password account not found for user`);
+		}
+
+		const isPasswordValid = await passwordUtils.comparePassword(
+			password,
+			passwordAccountData.password_hash,
+		);
+
+		if (!isPasswordValid) {
+			throw ApiError.unauthorized(`Invalid credentials`);
+		}
+
+		const accessToken = tokenUtils.generateToken({
+			sub: user.id,
+			email: user.email,
+		});
+
+		return {
+			user,
+			accessToken,
+		};
+	}
 }
 
 export default AuthService;

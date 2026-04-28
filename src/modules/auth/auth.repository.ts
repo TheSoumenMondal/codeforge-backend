@@ -1,3 +1,4 @@
+import { eq } from "drizzle-orm";
 import { db } from "../../common/config/db/index.js";
 import { password_account } from "../../common/config/db/schema/auth.js";
 import type { PasswordAccountDto } from "./dto/signup.dto.js";
@@ -16,6 +17,14 @@ class AuthRepository {
 			});
 
 		return passwordAccount ?? null;
+	}
+
+	async getPasswordAccountByUserId(userId: string) {
+		const passwordAccount = await db
+			.select()
+			.from(password_account)
+			.where(eq(password_account.user_id, userId));
+		return passwordAccount[0] ?? null;
 	}
 }
 

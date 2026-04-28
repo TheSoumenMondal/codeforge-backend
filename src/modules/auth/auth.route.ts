@@ -20,5 +20,6 @@ authRouter.get(
 );
 
 authRouter.post("/auth/signup", authController.signup.bind(authController));
+authRouter.post("/auth/login", authController.login.bind(authController));
 
 export { authRouter };
