@@ -91,6 +91,10 @@ class ProblemRepository {
 		}
 		return await this.getById(updatedProblem[0].id);
 	}
+
+	async delete(id: string) {
+		await db.delete(problem).where(eq(problem.id, id));
+	}
 }
 
 export default ProblemRepository;

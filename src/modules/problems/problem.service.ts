@@ -60,6 +60,18 @@ class ProblemService {
 		);
 		return updatedProblem;
 	}
+
+	async delete(userId: string, problemId: string) {
+		const problem = await this.problemRepository.getById(problemId);
+		if (!problem) {
+			throw ApiError.notFound("Problem not found");
+		}
+		if (problem.created_by !== userId) {
+			throw ApiError.forbidden("You are not authorized to delete this problem");
+		}
+		await this.problemRepository.delete(problemId);
+		return;
+	}
 }
 
 export default ProblemService;

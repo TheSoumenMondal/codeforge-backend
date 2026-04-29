@@ -96,7 +96,23 @@ class ProblemController {
 	});
 
 	public delete = asyncHandler(async (req, res) => {
-		throw ApiError.notImplemented("Delete problem not implemented yet");
+		const userId = req.user?.id;
+		if (!userId) {
+			throw ApiError.unauthorized("User not authenticated");
+		}
+
+		const problemId = req.params.id;
+		if (!problemId || typeof problemId !== "string") {
+			throw ApiError.invalid("Invalid problem ID");
+		}
+
+		await this.problemService.delete(userId, problemId);
+		res.status(StatusCodes.OK).json({
+			success: true,
+			message: "Problem deleted successfully",
+			data: null,
+			error: null,
+		});
 	});
 }
 

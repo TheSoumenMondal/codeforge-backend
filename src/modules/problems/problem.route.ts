@@ -25,12 +25,10 @@ problemRouter.post(
 );
 problemRouter.get(
 	"/problem",
-	authMiddleware.isAuthenticated.bind(authMiddleware),
 	problemController.getProblemByFilter.bind(problemController),
 );
 problemRouter.get(
 	"/problem/:id",
-	authMiddleware.isAuthenticated.bind(authMiddleware),
 	problemController.getById.bind(problemController),
 );
 problemRouter.put(
