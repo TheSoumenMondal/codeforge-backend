@@ -108,6 +108,15 @@ class TestCaseService {
 
 		return updatedTestCase;
 	}
+
+	async getTestCasesByProblemId(problemId: string) {
+		const testCases =
+			await this.testCaseRepository.getTestCasesByProblemId(problemId);
+		if (!testCases) {
+			throw ApiError.notFound("Test cases not found for this problem");
+		}
+		return testCases;
+	}
 }
 
 export { TestCaseService };

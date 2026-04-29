@@ -346,6 +346,21 @@ class ProblemController {
 			error: null,
 		});
 	});
+
+	public getAllTestCasesByProblemId = asyncHandler(async (req, res) => {
+		const problemId = req.params.id;
+		if (!problemId || typeof problemId !== "string") {
+			throw ApiError.invalid("Invalid problem ID");
+		}
+		const testCases =
+			await this.testCaseService.getTestCasesByProblemId(problemId);
+		res.status(StatusCodes.OK).json({
+			success: true,
+			message: "Test cases retrieved successfully",
+			data: testCases,
+			error: null,
+		});
+	});
 }
 
 export default ProblemController;

@@ -106,4 +106,9 @@ problemRouter.put(
 	problemController.updateTestCase.bind(problemController),
 );
 
+problemRouter.get(
+	"/problem/:id/test-cases",
+	problemController.getAllTestCasesByProblemId.bind(problemController),
+);
+
 export { problemRouter };
