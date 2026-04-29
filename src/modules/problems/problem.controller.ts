@@ -205,6 +205,26 @@ class ProblemController {
 			throw error;
 		}
 	});
+
+	public deleteCodeStub = asyncHandler(async (req, res) => {
+		const userId = req.user?.id;
+		if (!userId) {
+			throw ApiError.unauthorized("User not authenticated");
+		}
+
+		const codeStubId = req.params.id;
+		if (!codeStubId || typeof codeStubId !== "string") {
+			throw ApiError.invalid("Invalid code stub ID");
+		}
+
+		await this.codeStubService.deleteCodeStub(codeStubId, userId);
+		res.status(StatusCodes.OK).json({
+			success: true,
+			message: "Code stub deleted successfully",
+			data: null,
+			error: null,
+		});
+	});
 }
 
 export default ProblemController;

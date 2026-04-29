@@ -40,6 +40,26 @@ class CodeStubRepository {
 
 		return updatedCodeStub[0] ?? null;
 	}
+
+	async getCodeStubByCodeStubId(codeStubId: string) {
+		const codeStub = await db
+			.select()
+			.from(code_stub)
+			.where(eq(code_stub.id, codeStubId));
+		return codeStub[0] ?? null;
+	}
+
+	async getCodeStubByProblemId(problemId: string) {
+		const codeStub = await db
+			.select()
+			.from(code_stub)
+			.where(eq(code_stub.problem_id, problemId));
+		return codeStub[0] ?? null;
+	}
+
+	async delete(codeStubId: string) {
+		await db.delete(code_stub).where(eq(code_stub.id, codeStubId));
+	}
 }
 
 export { CodeStubRepository };

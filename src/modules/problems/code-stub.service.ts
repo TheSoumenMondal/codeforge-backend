@@ -60,6 +60,25 @@ class CodeStubService {
 		);
 		return updatedCodeStub;
 	}
+
+	async deleteCodeStub(codeStubId: string, userId: string) {
+		const codeStub =
+			await this.codeStubRepository.getCodeStubByCodeStubId(codeStubId);
+		if (!codeStub) {
+			throw ApiError.notFound("Code stub not found");
+		}
+
+		const problemproblem = await this.problemRepository.getById(
+			codeStub.problem_id,
+		);
+
+		if (problemproblem?.created_by !== userId) {
+			throw ApiError.forbidden(
+				"You are not allowed to delete code stub for this problem",
+			);
+		}
+		await this.codeStubRepository.delete(codeStubId);
+	}
 }
 
 export { CodeStubService };

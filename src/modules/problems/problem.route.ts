@@ -70,4 +70,10 @@ problemRouter.put(
 	problemController.updateCodeStub.bind(problemController),
 );
 
+problemRouter.delete(
+	"/problem/code-stub/:id",
+	authMiddleware.isAuthenticated.bind(authMiddleware),
+	problemController.deleteCodeStub.bind(problemController),
+);
+
 export { problemRouter };
