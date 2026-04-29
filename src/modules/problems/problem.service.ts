@@ -16,6 +16,18 @@ class ProblemService {
 		const problem = await this.problemRepository.create(data, userId);
 		return problem;
 	}
+
+	async getProblemsByFilter(difficulty?: string) {
+		const validDifficulties = ["easy", "medium", "hard"];
+		if (difficulty && !validDifficulties.includes(difficulty)) {
+			throw ApiError.invalid(
+				`Invalid difficulty. Must be one of: ${validDifficulties.join(", ")}`,
+			);
+		}
+		const problems =
+			await this.problemRepository.getProblemsByFilter(difficulty);
+		return problems;
+	}
 }
 
 export default ProblemService;

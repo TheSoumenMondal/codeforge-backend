@@ -27,6 +27,18 @@ class ProblemRepository {
 			.returning();
 		return createdProblem[0];
 	}
+
+	async getProblemsByFilter(difficulty?: string) {
+		if (difficulty) {
+			return await db
+				.select()
+				.from(problem)
+				.where(
+					eq(problem.difficulty, difficulty as "easy" | "medium" | "hard"),
+				);
+		}
+		return await db.select().from(problem);
+	}
 }
 
 export default ProblemRepository;
