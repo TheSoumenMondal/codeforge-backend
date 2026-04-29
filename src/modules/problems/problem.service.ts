@@ -28,6 +28,14 @@ class ProblemService {
 			await this.problemRepository.getProblemsByFilter(difficulty);
 		return problems;
 	}
+
+	async getById(id: string) {
+		const problem = await this.problemRepository.getById(id);
+		if (!problem) {
+			throw ApiError.notFound("Problem not found");
+		}
+		return problem;
+	}
 }
 
 export default ProblemService;

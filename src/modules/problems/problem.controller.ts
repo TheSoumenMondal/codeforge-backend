@@ -36,9 +36,11 @@ class ProblemController {
 
 	public getProblemByFilter = asyncHandler(async (req, res) => {
 		const { difficulty } = req.query;
+
 		const problems = await this.problemService.getProblemsByFilter(
 			difficulty as string | undefined,
 		);
+
 		res.status(StatusCodes.OK).json({
 			success: true,
 			message: "Problems retrieved successfully",
@@ -48,7 +50,17 @@ class ProblemController {
 	});
 
 	public getById = asyncHandler(async (req, res) => {
-		throw ApiError.notImplemented("Get problem by ID not implemented yet");
+		const id = req.params.id;
+		if (!id || typeof id !== "string") {
+			throw ApiError.invalid("Invalid problem ID");
+		}
+		const problem = await this.problemService.getById(id);
+		res.status(StatusCodes.OK).json({
+			success: true,
+			message: "Problem retrieved successfully",
+			data: problem,
+			error: null,
+		});
 	});
 
 	public update = asyncHandler(async (req, res) => {
