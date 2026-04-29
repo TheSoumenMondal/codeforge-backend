@@ -225,6 +225,22 @@ class ProblemController {
 			error: null,
 		});
 	});
+
+	public getAllCodeStubsByProblemId = asyncHandler(async (req, res) => {
+		const problemId = req.params.id;
+		if (!problemId || typeof problemId !== "string") {
+			throw ApiError.invalid("Invalid problem ID");
+		}
+
+		const codeStubs =
+			await this.codeStubService.getAllCodeStubsByProblemId(problemId);
+		res.status(StatusCodes.OK).json({
+			success: true,
+			message: "Code stubs retrieved successfully",
+			data: codeStubs,
+			error: null,
+		});
+	});
 }
 
 export default ProblemController;

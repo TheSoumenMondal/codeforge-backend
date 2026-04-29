@@ -54,7 +54,7 @@ class CodeStubRepository {
 			.select()
 			.from(code_stub)
 			.where(eq(code_stub.problem_id, problemId));
-		return codeStub[0] ?? null;
+		return codeStub ?? [];
 	}
 
 	async delete(codeStubId: string) {

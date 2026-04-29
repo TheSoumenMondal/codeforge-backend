@@ -76,4 +76,9 @@ problemRouter.delete(
 	problemController.deleteCodeStub.bind(problemController),
 );
 
+problemRouter.get(
+	"/problem/:id/code-stubs",
+	problemController.getAllCodeStubsByProblemId.bind(problemController),
+);
+
 export { problemRouter };

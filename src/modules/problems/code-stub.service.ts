@@ -79,6 +79,12 @@ class CodeStubService {
 		}
 		await this.codeStubRepository.delete(codeStubId);
 	}
+
+	async getAllCodeStubsByProblemId(problemId: string) {
+		const codeStubs =
+			await this.codeStubRepository.getCodeStubByProblemId(problemId);
+		return codeStubs;
+	}
 }
 
 export { CodeStubService };
