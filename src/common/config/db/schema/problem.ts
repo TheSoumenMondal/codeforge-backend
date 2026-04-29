@@ -7,6 +7,7 @@ import {
 	pgTable,
 	text,
 	timestamp,
+	uniqueIndex,
 	uuid,
 } from "drizzle-orm/pg-core";
 import { user } from "./user.js";
@@ -22,7 +23,6 @@ export const problem = pgTable(
 		title: text("title").notNull(),
 		description: text("description").notNull(),
 		difficulty: difficultyEnum("difficulty").notNull(),
-		like_count: integer("like_count").notNull().default(0),
 		created_by: uuid("created_by").notNull(),
 		created_at: timestamp("created_at").notNull().defaultNow(),
 		updated_at: timestamp("updated_at")
@@ -40,31 +40,41 @@ export const problem = pgTable(
 export const test_case = pgTable("test_case", {
 	id: uuid("id").primaryKey().defaultRandom(),
 	problem_id: uuid("problem_id")
-		.references(() => problem.id)
+		.references(() => problem.id, {
+			onDelete: "cascade",
+		})
 		.notNull(),
 	input: json("input").notNull(),
 	output: json("output").notNull(),
-	total_execution_time: json("total_execution_time").notNull(),
+	total_execution_time: integer("total_execution_time").notNull(),
 	created_at: timestamp("created_at").notNull().defaultNow(),
 	updated_at: timestamp("updated_at")
 		.notNull()
 		.$onUpdateFn(() => new Date()),
 });
 
-export const code_stub = pgTable("code_stub", {
-	id: uuid("id").primaryKey().defaultRandom(),
-	problem_id: uuid("problem_id")
-		.references(() => problem.id)
-		.notNull(),
-	language: languageEnum("language").notNull(),
-	start_code: text("start_code").notNull(),
-	user_code: text("user_code"),
-	end_code: text("end_code").notNull(),
-	created_at: timestamp("created_at").notNull().defaultNow(),
-	updated_at: timestamp("updated_at")
-		.notNull()
-		.$onUpdateFn(() => new Date()),
-});
+export const code_stub = pgTable(
+	"code_stub",
+	{
+		id: uuid("id").primaryKey().defaultRandom(),
+		problem_id: uuid("problem_id")
+			.references(() => problem.id, {
+				onDelete: "cascade",
+			})
+			.notNull(),
+		language: languageEnum("language").notNull(),
+		start_code: text("start_code").notNull(),
+		user_code: text("user_code"),
+		end_code: text("end_code").notNull(),
+		created_at: timestamp("created_at").notNull().defaultNow(),
+		updated_at: timestamp("updated_at")
+			.notNull()
+			.$onUpdateFn(() => new Date()),
+	},
+	(table) => [
+		uniqueIndex("unique_problem_language").on(table.problem_id, table.language),
+	],
+);
 
 export const problemRelations = relations(problem, ({ many, one }) => ({
 	testCases: many(test_case),

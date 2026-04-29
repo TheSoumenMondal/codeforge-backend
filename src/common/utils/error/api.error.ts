@@ -59,6 +59,10 @@ class ApiError extends Error {
 			"UnauthorizedError",
 		);
 	}
+
+	static forbidden(message: string = "Forbidden"): ApiError {
+		return new ApiError(message, StatusCodes.FORBIDDEN, true, "ForbiddenError");
+	}
 }
 
 export { ApiError };

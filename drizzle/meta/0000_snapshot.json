@@ -1,9 +1,163 @@
 {
-	"id": "c8a040ab-28c1-456e-b7a2-09e8fb4ae3ae",
+	"id": "9dd89ae7-f31b-4bcf-b102-dc57991f6e3b",
 	"prevId": "00000000-0000-0000-0000-000000000000",
 	"version": "7",
 	"dialect": "postgresql",
 	"tables": {
+		"public.oauth_accounts": {
+			"name": "oauth_accounts",
+			"schema": "",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "uuid",
+					"primaryKey": true,
+					"notNull": true,
+					"default": "gen_random_uuid()"
+				},
+				"user_id": {
+					"name": "user_id",
+					"type": "uuid",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"provider": {
+					"name": "provider",
+					"type": "varchar",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"provider_account_id": {
+					"name": "provider_account_id",
+					"type": "varchar",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"created_at": {
+					"name": "created_at",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "now()"
+				},
+				"updated_at": {
+					"name": "updated_at",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": false,
+					"default": "now()"
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"policies": {},
+			"checkConstraints": {},
+			"isRLSEnabled": false
+		},
+		"public.password_accounts": {
+			"name": "password_accounts",
+			"schema": "",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "uuid",
+					"primaryKey": true,
+					"notNull": true,
+					"default": "gen_random_uuid()"
+				},
+				"user_id": {
+					"name": "user_id",
+					"type": "uuid",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"password_hash": {
+					"name": "password_hash",
+					"type": "varchar",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"created_at": {
+					"name": "created_at",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "now()"
+				},
+				"updated_at": {
+					"name": "updated_at",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": false,
+					"default": "now()"
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"policies": {},
+			"checkConstraints": {},
+			"isRLSEnabled": false
+		},
+		"public.problem_likes": {
+			"name": "problem_likes",
+			"schema": "",
+			"columns": {
+				"user_id": {
+					"name": "user_id",
+					"type": "uuid",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"problem_id": {
+					"name": "problem_id",
+					"type": "uuid",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"created_at": {
+					"name": "created_at",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "now()"
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {
+				"problem_likes_user_id_user_id_fk": {
+					"name": "problem_likes_user_id_user_id_fk",
+					"tableFrom": "problem_likes",
+					"tableTo": "user",
+					"columnsFrom": ["user_id"],
+					"columnsTo": ["id"],
+					"onDelete": "cascade",
+					"onUpdate": "no action"
+				},
+				"problem_likes_problem_id_problem_id_fk": {
+					"name": "problem_likes_problem_id_problem_id_fk",
+					"tableFrom": "problem_likes",
+					"tableTo": "problem",
+					"columnsFrom": ["problem_id"],
+					"columnsTo": ["id"],
+					"onDelete": "cascade",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {
+				"problem_likes_user_id_problem_id_pk": {
+					"name": "problem_likes_user_id_problem_id_pk",
+					"columns": ["user_id", "problem_id"]
+				}
+			},
+			"uniqueConstraints": {},
+			"policies": {},
+			"checkConstraints": {},
+			"isRLSEnabled": false
+		},
 		"public.code_stub": {
 			"name": "code_stub",
 			"schema": "",
@@ -60,7 +214,29 @@
 					"notNull": true
 				}
 			},
-			"indexes": {},
+			"indexes": {
+				"unique_problem_language": {
+					"name": "unique_problem_language",
+					"columns": [
+						{
+							"expression": "problem_id",
+							"isExpression": false,
+							"asc": true,
+							"nulls": "last"
+						},
+						{
+							"expression": "language",
+							"isExpression": false,
+							"asc": true,
+							"nulls": "last"
+						}
+					],
+					"isUnique": true,
+					"concurrently": false,
+					"method": "btree",
+					"with": {}
+				}
+			},
 			"foreignKeys": {
 				"code_stub_problem_id_problem_id_fk": {
 					"name": "code_stub_problem_id_problem_id_fk",
@@ -68,7 +244,7 @@
 					"tableTo": "problem",
 					"columnsFrom": ["problem_id"],
 					"columnsTo": ["id"],
-					"onDelete": "no action",
+					"onDelete": "cascade",
 					"onUpdate": "no action"
 				}
 			},
@@ -107,13 +283,6 @@
 					"typeSchema": "public",
 					"primaryKey": false,
 					"notNull": true
-				},
-				"like_count": {
-					"name": "like_count",
-					"type": "integer",
-					"primaryKey": false,
-					"notNull": true,
-					"default": 0
 				},
 				"created_by": {
 					"name": "created_by",
@@ -179,7 +348,7 @@
 				},
 				"total_execution_time": {
 					"name": "total_execution_time",
-					"type": "json",
+					"type": "integer",
 					"primaryKey": false,
 					"notNull": true
 				},
@@ -205,7 +374,7 @@
 					"tableTo": "problem",
 					"columnsFrom": ["problem_id"],
 					"columnsTo": ["id"],
-					"onDelete": "no action",
+					"onDelete": "cascade",
 					"onUpdate": "no action"
 				}
 			},
