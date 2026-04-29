@@ -117,6 +117,34 @@ class TestCaseService {
 		}
 		return testCases;
 	}
+
+	async getPublicTestCasesByProblemId(problemId: string) {
+		const testCases =
+			await this.testCaseRepository.getTestCasesByProblemId(problemId);
+		if (!testCases) {
+			throw ApiError.notFound("Test cases not found for this problem");
+		}
+
+		const inputData = Array.isArray(testCases.input)
+			? testCases.input
+			: testCases.input !== null && typeof testCases.input === "object"
+				? Object.values(testCases.input as Record<string, unknown>)
+				: [];
+		const outputData = Array.isArray(testCases.output)
+			? testCases.output
+			: testCases.output !== null && typeof testCases.output === "object"
+				? Object.values(testCases.output as Record<string, unknown>)
+				: [];
+
+		const publicTestCases = inputData
+			.slice(0, 3)
+			.map((input: unknown, index: number) => ({
+				input,
+				output: outputData[index],
+			}));
+
+		return publicTestCases;
+	}
 }
 
 export { TestCaseService };

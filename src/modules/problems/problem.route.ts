@@ -106,9 +106,15 @@ problemRouter.put(
 	problemController.updateTestCase.bind(problemController),
 );
 
+// Private endpoint to get all test cases for a problem, only accessible to the problem creator and the admin
 problemRouter.get(
 	"/problem/:id/test-cases",
 	problemController.getAllTestCasesByProblemId.bind(problemController),
+);
+
+problemRouter.get(
+	"/problem/:id/test-case-public",
+	problemController.getPublicTestCasesByProblemId.bind(problemController),
 );
 
 export { problemRouter };
