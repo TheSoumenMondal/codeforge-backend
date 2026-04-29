@@ -6,6 +6,8 @@ import { CodeStubService } from "./code-stub.service.js";
 import ProblemController from "./problem.controller.js";
 import ProblemRepository from "./problem.repository.js";
 import ProblemService from "./problem.service.js";
+import { TestCaseRepository } from "./test-case.repository.js";
+import { TestCaseService } from "./test-case.service.js";
 
 const problemRepository = new ProblemRepository();
 const problemService = new ProblemService(problemRepository);
@@ -14,9 +16,15 @@ const codeStubService = new CodeStubService(
 	codeStubRepository,
 	problemRepository,
 );
+const testCaseRepository = new TestCaseRepository();
+const testCaseService = new TestCaseService(
+	testCaseRepository,
+	problemRepository,
+);
 const problemController = new ProblemController(
 	problemService,
 	codeStubService,
+	testCaseService,
 );
 const authMiddleware = new AuthMiddleware();
 
@@ -84,6 +92,12 @@ problemRouter.get(
 problemRouter.get(
 	"/problem/:id/code-stub",
 	problemController.getAllCodeStubsByProblemIdFiltered.bind(problemController),
+);
+
+problemRouter.post(
+	"/problem/:id/test-case",
+	authMiddleware.isAuthenticated.bind(authMiddleware),
+	problemController.createTestCase.bind(problemController),
 );
 
 export { problemRouter };

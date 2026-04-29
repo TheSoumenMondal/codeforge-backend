@@ -71,12 +71,9 @@ export const code_stub = pgTable(
 			.notNull()
 			.$onUpdateFn(() => new Date()),
 	},
-	(table) => ({
-		uniqueProblemLanguage: uniqueIndex("unique_problem_language").on(
-			table.problem_id,
-			table.language,
-		),
-	}),
+	(table) => [
+		uniqueIndex("unique_problem_language").on(table.problem_id, table.language),
+	],
 );
 
 export const problemRelations = relations(problem, ({ many, one }) => ({
