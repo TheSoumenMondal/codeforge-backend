@@ -72,6 +72,29 @@ class ProblemService {
 		await this.problemRepository.delete(problemId);
 		return;
 	}
+
+	async toggleLike(userId: string, problemId: string) {
+		const problem = await this.problemRepository.getById(problemId);
+
+		if (userId === problem?.created_by) {
+			throw ApiError.badRequest("You cannot like your own problem");
+		}
+
+		if (!problem) {
+			throw ApiError.notFound("Problem not found");
+		}
+		const hasUserLiked = await this.problemRepository.hasUserLikedProblem(
+			userId,
+			problemId,
+		);
+
+		if (hasUserLiked) {
+			await this.problemRepository.unlike(userId, problemId);
+		} else {
+			await this.problemRepository.like(userId, problemId);
+		}
+		return;
+	}
 }
 
 export default ProblemService;

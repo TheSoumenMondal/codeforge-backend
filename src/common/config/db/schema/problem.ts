@@ -1,7 +1,6 @@
 import { relations, sql } from "drizzle-orm";
 import {
 	check,
-	integer,
 	json,
 	pgEnum,
 	pgTable,
@@ -22,7 +21,6 @@ export const problem = pgTable(
 		title: text("title").notNull(),
 		description: text("description").notNull(),
 		difficulty: difficultyEnum("difficulty").notNull(),
-		like_count: integer("like_count").notNull().default(0),
 		created_by: uuid("created_by").notNull(),
 		created_at: timestamp("created_at").notNull().defaultNow(),
 		updated_at: timestamp("updated_at")

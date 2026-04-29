@@ -1,5 +1,6 @@
-import { eq, sql } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import { db } from "../../common/config/db/index.js";
+import { problemLikes } from "../../common/config/db/schema/like.js";
 import { problem } from "../../common/config/db/schema/problem.js";
 import { user } from "../../common/config/db/schema/user.js";
 import type { ProblemDto } from "./dto/problem.dto.js";
@@ -51,7 +52,6 @@ class ProblemRepository {
 				title: problem.title,
 				description: problem.description,
 				difficulty: problem.difficulty,
-				like_count: problem.like_count,
 				created_by: problem.created_by,
 				created_at: problem.created_at,
 				updated_at: problem.updated_at,
@@ -94,6 +94,40 @@ class ProblemRepository {
 
 	async delete(id: string) {
 		await db.delete(problem).where(eq(problem.id, id));
+	}
+
+	async hasUserLikedProblem(userId: string, problemId: string) {
+		const result = await db
+			.select()
+			.from(problemLikes)
+			.where(
+				and(
+					eq(problemLikes.userId, userId),
+					eq(problemLikes.problemId, problemId),
+				),
+			)
+			.limit(1);
+
+		return result.length > 0;
+	}
+
+	async like(userId: string, id: string) {
+		await db.transaction(async (tx) => {
+			await tx.select().from(problem).where(eq(problem.id, id)).limit(1);
+
+			await tx.insert(problemLikes).values({
+				userId: userId,
+				problemId: id,
+			});
+		});
+	}
+
+	async unlike(userId: string, id: string) {
+		await db
+			.delete(problemLikes)
+			.where(
+				and(eq(problemLikes.userId, userId), eq(problemLikes.problemId, id)),
+			);
 	}
 }
 

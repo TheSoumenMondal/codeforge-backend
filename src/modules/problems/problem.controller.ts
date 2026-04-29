@@ -114,6 +114,26 @@ class ProblemController {
 			error: null,
 		});
 	});
+
+	public toggleLike = asyncHandler(async (req, res) => {
+		const userId = req.user?.id;
+		if (!userId) {
+			throw ApiError.unauthorized("User not authenticated");
+		}
+
+		const problemId = req.params.id;
+		if (!problemId || typeof problemId !== "string") {
+			throw ApiError.invalid("Invalid problem ID");
+		}
+
+		await this.problemService.toggleLike(userId, problemId);
+		res.status(StatusCodes.OK).json({
+			success: true,
+			message: "Problem like status updated successfully",
+			data: null,
+			error: null,
+		});
+	});
 }
 
 export default ProblemController;

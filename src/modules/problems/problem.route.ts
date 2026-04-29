@@ -42,4 +42,10 @@ problemRouter.delete(
 	problemController.delete.bind(problemController),
 );
 
+problemRouter.post(
+	"/problem/toggle-like/:id",
+	authMiddleware.isAuthenticated.bind(authMiddleware),
+	problemController.toggleLike.bind(problemController),
+);
+
 export { problemRouter };
