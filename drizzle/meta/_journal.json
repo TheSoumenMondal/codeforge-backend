@@ -5,29 +5,8 @@
 		{
 			"idx": 0,
 			"version": "7",
-			"when": 1776921573937,
-			"tag": "0000_eager_sprite",
-			"breakpoints": true
-		},
-		{
-			"idx": 1,
-			"version": "7",
-			"when": 1776964897731,
-			"tag": "0001_flimsy_mister_sinister",
-			"breakpoints": true
-		},
-		{
-			"idx": 2,
-			"version": "7",
-			"when": 1777484362127,
-			"tag": "0002_lively_mongu",
-			"breakpoints": true
-		},
-		{
-			"idx": 3,
-			"version": "7",
-			"when": 1777488000000,
-			"tag": "0003_drop_problem_like_count",
+			"when": 1777492357111,
+			"tag": "0000_pretty_karnak",
 			"breakpoints": true
 		}
 	]

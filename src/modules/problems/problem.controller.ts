@@ -1,13 +1,20 @@
 import asyncHandler from "express-async-handler";
 import { StatusCodes } from "http-status-codes";
 import { ApiError } from "../../common/utils/error/api.error.js";
+import type { CodeStubService } from "./code-stub.service.js";
+import { CreateCodeStubDto } from "./dto/code-stub.dto.js";
 import { ProblemDto, ProblemUpdateDto } from "./dto/problem.dto.js";
 import type ProblemService from "./problem.service.js";
 
 class ProblemController {
 	private problemService: ProblemService;
-	constructor(problemService: ProblemService) {
+	private codeStubService: CodeStubService;
+	constructor(
+		problemService: ProblemService,
+		codeStubService: CodeStubService,
+	) {
 		this.problemService = problemService;
+		this.codeStubService = codeStubService;
 	}
 
 	public create = asyncHandler(async (req, res) => {
@@ -131,6 +138,32 @@ class ProblemController {
 			success: true,
 			message: "Problem like status updated successfully",
 			data: null,
+			error: null,
+		});
+	});
+
+	public createCodeStub = asyncHandler(async (req, res) => {
+		const userId = req.user?.id;
+		if (!userId) {
+			throw ApiError.unauthorized("User not authenticated");
+		}
+
+		const incomingData = await CreateCodeStubDto.safeParseAsync(req.body);
+		if (!incomingData.success) {
+			throw ApiError.invalid(
+				`Invalid data : ${incomingData.error?.issues.map((issue) => issue.message).join(", ")}`,
+			);
+		}
+
+		const codeStub = await this.codeStubService.createCodeStub(
+			incomingData.data,
+			userId,
+		);
+
+		res.status(StatusCodes.CREATED).json({
+			success: true,
+			message: "Code stub created successfully",
+			data: codeStub,
 			error: null,
 		});
 	});
