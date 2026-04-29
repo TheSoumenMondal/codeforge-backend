@@ -64,4 +64,10 @@ problemRouter.post(
 	problemController.createCodeStub.bind(problemController),
 );
 
+problemRouter.put(
+	"/problem/:id/code-stub",
+	authMiddleware.isAuthenticated.bind(authMiddleware),
+	problemController.updateCodeStub.bind(problemController),
+);
+
 export { problemRouter };

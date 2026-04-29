@@ -9,8 +9,6 @@ export const CreateCodeStubDto = z.object({
 });
 
 export const UpdateCodeStubDto = z.object({
-	problemId: z.string(),
-	language: z.enum(["python", "javascript", "java", "cpp"]).optional(),
 	startCode: z.string().optional(),
 	userCode: z.string().optional(),
 	endCode: z.string().optional(),

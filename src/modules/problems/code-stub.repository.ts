@@ -1,5 +1,7 @@
+import { eq } from "drizzle-orm";
 import { db } from "../../common/config/db/index.js";
 import { code_stub } from "../../common/config/db/schema/problem.js";
+import type { UpdateCodeStubDtoType } from "./dto/code-stub.dto.js";
 
 class CodeStubRepository {
 	async create(data: {
@@ -15,6 +17,28 @@ class CodeStubRepository {
 			.returning()
 			.onConflictDoNothing();
 		return codeStub[0] ?? null;
+	}
+
+	async update(id: string, data: UpdateCodeStubDtoType) {
+		const updateData: Record<string, any> = {};
+
+		if (data.startCode !== undefined) {
+			updateData.start_code = data.startCode;
+		}
+		if (data.userCode !== undefined) {
+			updateData.user_code = data.userCode;
+		}
+		if (data.endCode !== undefined) {
+			updateData.end_code = data.endCode;
+		}
+
+		const updatedCodeStub = await db
+			.update(code_stub)
+			.set(updateData)
+			.where(eq(code_stub.problem_id, id))
+			.returning();
+
+		return updatedCodeStub[0] ?? null;
 	}
 }
 

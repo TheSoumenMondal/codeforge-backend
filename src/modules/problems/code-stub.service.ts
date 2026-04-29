@@ -1,6 +1,9 @@
 import { ApiError } from "../../common/utils/error/api.error.js";
 import type { CodeStubRepository } from "./code-stub.repository.js";
-import type { CreateCodeStubDtoType } from "./dto/code-stub.dto.js";
+import type {
+	CreateCodeStubDtoType,
+	UpdateCodeStubDtoType,
+} from "./dto/code-stub.dto.js";
 import type ProblemRepository from "./problem.repository.js";
 
 class CodeStubService {
@@ -34,6 +37,28 @@ class CodeStubService {
 			end_code: data.endCode,
 		});
 		return codeStub;
+	}
+
+	async updateCodeStub(
+		problemId: string,
+		data: UpdateCodeStubDtoType,
+		userId: string,
+	) {
+		const problem = await this.problemRepository.getById(problemId);
+		if (!problem) {
+			throw ApiError.notFound("Problem not found");
+		}
+		if (problem.created_by !== userId) {
+			throw ApiError.forbidden(
+				"You are not allowed to update code stub for this problem",
+			);
+		}
+
+		const updatedCodeStub = await this.codeStubRepository.update(
+			problemId,
+			data,
+		);
+		return updatedCodeStub;
 	}
 }
 
