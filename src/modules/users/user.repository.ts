@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
 import { db } from "../../common/config/db/index.js";
 import { user } from "../../common/config/db/schema/user.js";
-import type { CreateUserDto } from "./dto/user.dto.js";
+import type { CreateUserDto, UpdateUserDto } from "./dto/user.dto.js";
 
 class UserRepository {
 	async getUserByEmail(email: string) {
@@ -36,6 +36,15 @@ class UserRepository {
 			.where(eq(user.id, userId))
 			.limit(1);
 		return existingUser[0] ?? null;
+	}
+
+	async updateUser(userId: string, updateData: UpdateUserDto) {
+		const updatedUser = await db
+			.update(user)
+			.set(updateData)
+			.where(eq(user.id, userId))
+			.returning();
+		return updatedUser[0] ?? null;
 	}
 }
 
