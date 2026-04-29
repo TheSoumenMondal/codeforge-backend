@@ -4,7 +4,7 @@ import { ApiError } from "../../common/utils/error/api.error.js";
 import type { CodeStubService } from "./code-stub.service.js";
 import { CreateCodeStubDto, UpdateCodeStubDto } from "./dto/code-stub.dto.js";
 import { ProblemDto, ProblemUpdateDto } from "./dto/problem.dto.js";
-import { CreateTestCaseDto } from "./dto/test-case.dto.js";
+import { CreateTestCaseDto, UpdateTestCaseDto } from "./dto/test-case.dto.js";
 import type ProblemService from "./problem.service.js";
 import type { TestCaseService } from "./test-case.service.js";
 
@@ -309,6 +309,39 @@ class ProblemController {
 		res.status(StatusCodes.CREATED).json({
 			success: true,
 			message: "Test case created successfully",
+			data: testCase,
+			error: null,
+		});
+	});
+
+	public updateTestCase = asyncHandler(async (req, res) => {
+		const userId = req.user?.id;
+		if (!userId) {
+			throw ApiError.unauthorized("User not authenticated");
+		}
+
+		const problemId = req.params.id;
+		if (!problemId || typeof problemId !== "string") {
+			throw ApiError.invalid("Invalid problem ID");
+		}
+
+		const incomingData = await UpdateTestCaseDto.safeParseAsync(req.body);
+
+		if (!incomingData.success) {
+			throw ApiError.invalid(
+				`Invalid data : ${incomingData.error?.issues.map((issue) => issue.message).join(", ")}`,
+			);
+		}
+
+		const testCase = await this.testCaseService.updateTestCase(
+			problemId,
+			incomingData.data,
+			userId,
+		);
+
+		res.status(StatusCodes.OK).json({
+			success: true,
+			message: "Test case updated successfully",
 			data: testCase,
 			error: null,
 		});

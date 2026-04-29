@@ -6,6 +6,13 @@ const CreateTestCaseDto = z.object({
 	totalExecutionTime: z.number(),
 });
 
-export type CreateTestCaseDtoType = z.infer<typeof CreateTestCaseDto>;
+const UpdateTestCaseDto = z.object({
+	input: z.json().optional(),
+	output: z.json().optional(),
+	totalExecutionTime: z.number().optional(),
+});
 
-export { CreateTestCaseDto };
+export type CreateTestCaseDtoType = z.infer<typeof CreateTestCaseDto>;
+export type UpdateTestCaseDtoType = z.infer<typeof UpdateTestCaseDto>;
+
+export { CreateTestCaseDto, UpdateTestCaseDto };

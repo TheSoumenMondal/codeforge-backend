@@ -1,7 +1,10 @@
 import { eq } from "drizzle-orm";
 import { db } from "../../common/config/db/index.js";
 import { test_case } from "../../common/config/db/schema/problem.js";
-import type { CreateTestCaseDtoType } from "./dto/test-case.dto.js";
+import type {
+	CreateTestCaseDtoType,
+	UpdateTestCaseDtoType,
+} from "./dto/test-case.dto.js";
 
 class TestCaseRepository {
 	async getTestCasesByProblemId(problemId: string) {
@@ -23,6 +26,20 @@ class TestCaseRepository {
 			})
 			.returning();
 		return testCase[0] ?? null;
+	}
+
+	async update(problemId: string, data: UpdateTestCaseDtoType) {
+		const updatedProblem = await db
+			.update(test_case)
+			.set({
+				input: data.input,
+				output: data.output,
+				total_execution_time: data.totalExecutionTime,
+			})
+			.where(eq(test_case.problem_id, problemId))
+			.returning();
+
+		return updatedProblem;
 	}
 }
 

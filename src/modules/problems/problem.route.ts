@@ -100,4 +100,10 @@ problemRouter.post(
 	problemController.createTestCase.bind(problemController),
 );
 
+problemRouter.put(
+	"/problem/:id/test-case",
+	authMiddleware.isAuthenticated.bind(authMiddleware),
+	problemController.updateTestCase.bind(problemController),
+);
+
 export { problemRouter };
