@@ -41,6 +41,10 @@ class TestCaseRepository {
 
 		return updatedProblem;
 	}
+
+	async delete(problemId: string) {
+		await db.delete(test_case).where(eq(test_case.problem_id, problemId));
+	}
 }
 
 export { TestCaseRepository };

@@ -376,6 +376,25 @@ class ProblemController {
 			error: null,
 		});
 	});
+
+	public deleteTestCase = asyncHandler(async (req, res) => {
+		const userId = req.user?.id;
+		if (!userId) {
+			throw ApiError.unauthorized("User not authenticated");
+		}
+
+		const problemId = req.params.id;
+		if (!problemId || typeof problemId !== "string") {
+			throw ApiError.invalid("Invalid problem ID");
+		}
+		await this.testCaseService.deleteTestCase(problemId, userId);
+		res.status(StatusCodes.OK).json({
+			success: true,
+			message: "Test case deleted successfully",
+			data: null,
+			error: null,
+		});
+	});
 }
 
 export default ProblemController;

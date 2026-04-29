@@ -145,6 +145,27 @@ class TestCaseService {
 
 		return publicTestCases;
 	}
+
+	async deleteTestCase(problemId: string, userId: string) {
+		const problem = await this.problemRepository.getById(problemId);
+		if (!problem) {
+			throw ApiError.notFound("Problem not found");
+		}
+
+		if (problem.created_by !== userId) {
+			throw ApiError.forbidden(
+				"You are not allowed to delete test case for this problem",
+			);
+		}
+		const existingTestCase =
+			await this.testCaseRepository.getTestCasesByProblemId(problemId);
+
+		if (!existingTestCase) {
+			throw ApiError.notFound("Test case not found for this problem");
+		}
+
+		await this.testCaseRepository.delete(problemId);
+	}
 }
 
 export { TestCaseService };

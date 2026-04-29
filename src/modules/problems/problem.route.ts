@@ -117,4 +117,10 @@ problemRouter.get(
 	problemController.getPublicTestCasesByProblemId.bind(problemController),
 );
 
+problemRouter.delete(
+	"/problem/:id/test-case",
+	authMiddleware.isAuthenticated.bind(authMiddleware),
+	problemController.deleteTestCase.bind(problemController),
+);
+
 export { problemRouter };
