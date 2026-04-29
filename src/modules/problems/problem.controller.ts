@@ -1,7 +1,7 @@
 import asyncHandler from "express-async-handler";
 import { StatusCodes } from "http-status-codes";
 import { ApiError } from "../../common/utils/error/api.error.js";
-import { ProblemDto } from "./dto/problem.dto.js";
+import { ProblemDto, ProblemUpdateDto } from "./dto/problem.dto.js";
 import type ProblemService from "./problem.service.js";
 
 class ProblemController {
@@ -14,7 +14,7 @@ class ProblemController {
 		const incomingData = await ProblemDto.safeParseAsync(req.body);
 		if (!incomingData.success) {
 			throw ApiError.invalid(
-				`Invalid data : ${(await incomingData).error?.issues.map((issue) => issue.message).join(", ")}`,
+				`Invalid data : ${incomingData.error?.issues.map((issue) => issue.message).join(", ")}`,
 			);
 		}
 
@@ -64,7 +64,35 @@ class ProblemController {
 	});
 
 	public update = asyncHandler(async (req, res) => {
-		throw ApiError.notImplemented("Update problem not implemented yet");
+		const userId = req.user?.id;
+		if (!userId) {
+			throw ApiError.unauthorized("User not authenticated");
+		}
+
+		const incomingData = await ProblemUpdateDto.safeParseAsync(req.body);
+
+		if (!incomingData.success) {
+			throw ApiError.invalid(
+				`Invalid data : ${incomingData.error?.issues.map((issue) => issue.message).join(", ")}`,
+			);
+		}
+
+		const problemId = req.params.id;
+		if (!problemId || typeof problemId !== "string") {
+			throw ApiError.invalid("Invalid problem ID");
+		}
+
+		const updatedProblem = await this.problemService.update(
+			userId,
+			problemId,
+			incomingData.data,
+		);
+		res.status(StatusCodes.OK).json({
+			success: true,
+			message: "Problem updated successfully",
+			data: updatedProblem,
+			error: null,
+		});
 	});
 
 	public delete = asyncHandler(async (req, res) => {

@@ -75,6 +75,22 @@ class ProblemRepository {
 
 		return result[0] ?? null;
 	}
+
+	async update(id: string, data: Partial<ProblemDto>) {
+		const updatedProblem = await db
+			.update(problem)
+			.set({
+				title: data.title,
+				description: data.description,
+				difficulty: data.difficulty,
+			})
+			.where(eq(problem.id, id))
+			.returning();
+		if (!updatedProblem[0]) {
+			return null;
+		}
+		return await this.getById(updatedProblem[0].id);
+	}
 }
 
 export default ProblemRepository;

@@ -6,6 +6,14 @@ export const ProblemDto = z.object({
 	difficulty: z.enum(["easy", "medium", "hard"]),
 });
 
+export const ProblemUpdateDto = z
+	.object({
+		title: z.string().min(3).max(255).optional(),
+		description: z.string().min(10).max(5000).optional(),
+		difficulty: z.enum(["easy", "medium", "hard"]).optional(),
+	})
+	.strict();
+
 export const TestCaseDto = z.object({
 	problem_id: z.string(),
 	input: z.string().min(1).max(1000),
@@ -22,5 +30,6 @@ export const CodeStubDto = z.object({
 });
 
 export type ProblemDto = z.infer<typeof ProblemDto>;
+export type ProblemUpdateDto = z.infer<typeof ProblemUpdateDto>;
 export type TestCaseDto = z.infer<typeof TestCaseDto>;
 export type CodeStubDto = z.infer<typeof CodeStubDto>;

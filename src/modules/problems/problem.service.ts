@@ -1,5 +1,5 @@
 import { ApiError } from "../../common/utils/error/api.error.js";
-import type { ProblemDto } from "./dto/problem.dto.js";
+import type { ProblemDto, ProblemUpdateDto } from "./dto/problem.dto.js";
 import type ProblemRepository from "./problem.repository.js";
 
 class ProblemService {
@@ -35,6 +35,30 @@ class ProblemService {
 			throw ApiError.notFound("Problem not found");
 		}
 		return problem;
+	}
+
+	async update(userId: string, problemId: string, data: ProblemUpdateDto) {
+		const problem = await this.problemRepository.getById(problemId);
+
+		if (!problem) {
+			throw ApiError.notFound("Problem not found");
+		}
+
+		if (problem.created_by !== userId) {
+			throw ApiError.forbidden("You are not authorized to update this problem");
+		}
+
+		const updatedData = {
+			title: data.title ?? problem.title,
+			description: data.description ?? problem.description,
+			difficulty: data.difficulty ?? problem.difficulty,
+		};
+
+		const updatedProblem = await this.problemRepository.update(
+			problemId,
+			updatedData,
+		);
+		return updatedProblem;
 	}
 }
 
