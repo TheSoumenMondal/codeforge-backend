@@ -6,7 +6,7 @@ import { errorHandler } from "./common/utils/error/error-handler.js";
 import { authRouter } from "./modules/auth/auth.route.js";
 import { problemRouter } from "./modules/problems/problem.route.js";
 import { submissionRouter } from "./modules/submissions/problem.route.js";
-import { userRouter } from "./modules/users/problem.route.js";
+import { userRouter } from "./modules/users/user.route.js";
 
 class ExpressApp {
 	private app: express.Application;
