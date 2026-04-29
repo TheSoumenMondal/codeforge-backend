@@ -1,5 +1,7 @@
 import asyncHandler from "express-async-handler";
+import { StatusCodes } from "http-status-codes";
 import { ApiError } from "../../common/utils/error/api.error.js";
+import { ProblemDto } from "./dto/problem.dto.js";
 import type ProblemService from "./problem.service.js";
 
 class ProblemController {
@@ -9,7 +11,27 @@ class ProblemController {
 	}
 
 	public create = asyncHandler(async (req, res) => {
-		throw ApiError.notImplemented("Create problem not implemented yet");
+		const incomingData = await ProblemDto.safeParseAsync(req.body);
+		if (!incomingData.success) {
+			throw ApiError.invalid(
+				`Invalid data : ${(await incomingData).error?.issues.map((issue) => issue.message).join(", ")}`,
+			);
+		}
+
+		const userId = req.user?.id;
+
+		if (!userId) {
+			throw ApiError.unauthorized("User not authenticated");
+		}
+
+		const problem = await this.problemService.create(incomingData.data, userId);
+
+		res.status(StatusCodes.CREATED).json({
+			success: true,
+			message: "Problem created successfully",
+			data: problem,
+			error: null,
+		});
 	});
 
 	public getProblemByFilter = asyncHandler(async (req, res) => {
