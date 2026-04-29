@@ -11,6 +11,7 @@ export const updateUserDto = z
 		bio: z.string().optional(),
 		location: z.string().optional(),
 		website_url: z.string().optional(),
+		avatar_url: z.string().optional(),
 	})
 	.strict();
 

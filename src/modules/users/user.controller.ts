@@ -50,6 +50,7 @@ class UserController {
 	updateProfile = expressAsyncHandler(async (req, res) => {
 		const incomingData = req.body;
 		const parsedData = await updateUserDto.safeParseAsync(incomingData);
+
 		if (!parsedData.success) {
 			throw ApiError.invalid(
 				`Invalid data : ${parsedData.error.issues.map((issue) => `${issue.path.join(".")}: ${issue.message}`).join(", ")}`,
@@ -69,6 +70,29 @@ class UserController {
 			success: true,
 			data: updatedProfile,
 			message: "User profile updated successfully",
+			error: null,
+		});
+	});
+
+	addAvatar = expressAsyncHandler(async (req, res) => {
+		const userId = req.user?.id;
+		if (!userId) {
+			throw ApiError.unauthorized("You are not authenticated.");
+		}
+		if (!req.file) {
+			throw ApiError.invalid("File not found.");
+		}
+
+		const result = await this.userService.addAvatar(
+			userId,
+			req.file?.buffer,
+			req.file?.originalname,
+			req.file?.mimetype,
+		);
+		res.status(StatusCodes.OK).json({
+			success: true,
+			data: result,
+			message: "Avatar uploaded successfully",
 			error: null,
 		});
 	});

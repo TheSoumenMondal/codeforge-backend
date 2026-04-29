@@ -15,6 +15,7 @@ const envSchema = z.object({
 	LOGGER_LEVEL: z
 		.enum(["trace", "debug", "info", "warn", "error", "fatal"])
 		.default("info"),
+	IMAGEKIT_PRIVATE_KEY: z.string(),
 });
 
 type EnvConfig = z.infer<typeof envSchema>;
