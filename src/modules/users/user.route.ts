@@ -26,4 +26,10 @@ userRouter.get(
 	userController.getProfile.bind(userController),
 );
 
+userRouter.put(
+	"/user/profile",
+	authMiddleware.isAuthenticated,
+	userController.updateProfile.bind(userController),
+);
+
 export { userRouter };

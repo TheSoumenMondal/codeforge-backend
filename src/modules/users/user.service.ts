@@ -1,5 +1,5 @@
 import { ApiError } from "../../common/utils/error/api.error.js";
-import type { CreateUserDto } from "./dto/user.dto.js";
+import type { CreateUserDto, UpdateUserDto } from "./dto/user.dto.js";
 import type UserRepository from "./user.repository.js";
 
 class UserService {
@@ -29,6 +29,21 @@ class UserService {
 			throw ApiError.notFound("User not found");
 		}
 		return userProfile;
+	}
+
+	async updateProfile(userId: string, updateData: UpdateUserDto) {
+		const userProfile = await this.userRepository.getUserById(userId);
+		if (!userProfile) {
+			throw ApiError.notFound("User not found");
+		}
+		const updatedUser = await this.userRepository.updateUser(
+			userId,
+			updateData,
+		);
+		if (!updatedUser) {
+			throw ApiError.badRequest("Failed to update user profile");
+		}
+		return updatedUser;
 	}
 }
 

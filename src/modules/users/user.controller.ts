@@ -1,7 +1,7 @@
 import expressAsyncHandler from "express-async-handler";
 import { StatusCodes } from "http-status-codes";
 import { ApiError } from "../../common/utils/error/api.error.js";
-import { createUserDto } from "./dto/user.dto.js";
+import { createUserDto, updateUserDto } from "./dto/user.dto.js";
 import type UserService from "./user.service.js";
 
 class UserController {
@@ -43,6 +43,32 @@ class UserController {
 			success: true,
 			data: userProfile,
 			message: "User profile retrieved successfully",
+			error: null,
+		});
+	});
+
+	updateProfile = expressAsyncHandler(async (req, res) => {
+		const incomingData = req.body;
+		const parsedData = await updateUserDto.safeParseAsync(incomingData);
+		if (!parsedData.success) {
+			throw ApiError.invalid(
+				`Invalid data : ${parsedData.error.issues.map((issue) => `${issue.path.join(".")}: ${issue.message}`).join(", ")}`,
+			);
+		}
+
+		const userId = req.user?.id;
+		if (!userId) {
+			throw ApiError.unauthorized("You are not authenticated.");
+		}
+
+		const updatedProfile = await this.userService.updateProfile(
+			userId,
+			parsedData.data,
+		);
+		res.status(StatusCodes.OK).json({
+			success: true,
+			data: updatedProfile,
+			message: "User profile updated successfully",
 			error: null,
 		});
 	});
