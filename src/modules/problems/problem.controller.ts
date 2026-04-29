@@ -241,6 +241,42 @@ class ProblemController {
 			error: null,
 		});
 	});
+
+	public getAllCodeStubsByProblemIdFiltered = asyncHandler(async (req, res) => {
+		const problemId = req.params.id;
+		if (!problemId || typeof problemId !== "string") {
+			throw ApiError.invalid("Invalid problem ID");
+		}
+
+		const languageParam = req.query.language;
+		const allowedLanguages = ["cpp", "java", "python", "js"] as const;
+		const language =
+			typeof languageParam === "string"
+				? languageParam === "javascript"
+					? "js"
+					: allowedLanguages.includes(
+								languageParam as (typeof allowedLanguages)[number],
+							)
+						? (languageParam as (typeof allowedLanguages)[number])
+						: undefined
+				: undefined;
+
+		if (typeof languageParam === "string" && language === undefined) {
+			throw ApiError.invalid("Invalid language filter");
+		}
+
+		const codeStubs = await this.codeStubService.getAllCodeStubsByProblemId(
+			problemId,
+			language,
+		);
+
+		res.status(StatusCodes.OK).json({
+			success: true,
+			message: "Code stubs retrieved successfully",
+			data: codeStubs,
+			error: null,
+		});
+	});
 }
 
 export default ProblemController;

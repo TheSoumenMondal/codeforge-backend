@@ -6,6 +6,8 @@ import type {
 } from "./dto/code-stub.dto.js";
 import type ProblemRepository from "./problem.repository.js";
 
+type CodeStubLanguage = "cpp" | "java" | "python" | "js";
+
 class CodeStubService {
 	private readonly codeStubRepository: CodeStubRepository;
 	private readonly problemRepository: ProblemRepository;
@@ -80,10 +82,17 @@ class CodeStubService {
 		await this.codeStubRepository.delete(codeStubId);
 	}
 
-	async getAllCodeStubsByProblemId(problemId: string) {
-		const codeStubs =
-			await this.codeStubRepository.getCodeStubByProblemId(problemId);
-		return codeStubs;
+	async getAllCodeStubsByProblemId(
+		problemId: string,
+		language?: CodeStubLanguage,
+	) {
+		if (language) {
+			return this.codeStubRepository.filterCodeStubByLanguage(
+				problemId,
+				language,
+			);
+		}
+		return this.codeStubRepository.getCodeStubByProblemId(problemId);
 	}
 }
 

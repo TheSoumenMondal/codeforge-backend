@@ -81,4 +81,9 @@ problemRouter.get(
 	problemController.getAllCodeStubsByProblemId.bind(problemController),
 );
 
+problemRouter.get(
+	"/problem/:id/code-stub",
+	problemController.getAllCodeStubsByProblemIdFiltered.bind(problemController),
+);
+
 export { problemRouter };
