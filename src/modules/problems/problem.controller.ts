@@ -67,7 +67,16 @@ class ProblemController {
 		if (!id || typeof id !== "string") {
 			throw ApiError.invalid("Invalid problem ID");
 		}
-		const problem = await this.problemService.getById(id);
+
+		const variant = req.query.variant;
+		if (typeof variant === "string" && !["three", "all"].includes(variant)) {
+			throw ApiError.invalid("Invalid variant. Use three or all.");
+		}
+
+		const problem =
+			typeof variant === "string" && variant === "all"
+				? await this.problemService.getByIdWithAllTestCases(id)
+				: await this.problemService.getByIdWithThreeTestCases(id);
 		res.status(StatusCodes.OK).json({
 			success: true,
 			message: "Problem retrieved successfully",

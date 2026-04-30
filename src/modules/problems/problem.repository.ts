@@ -1,7 +1,11 @@
 import { and, eq, sql } from "drizzle-orm";
 import { db } from "../../common/config/db/index.js";
 import { problemLikes } from "../../common/config/db/schema/like.js";
-import { problem } from "../../common/config/db/schema/problem.js";
+import {
+	code_stub,
+	problem,
+	test_case,
+} from "../../common/config/db/schema/problem.js";
 import { user } from "../../common/config/db/schema/user.js";
 import type { ProblemDto } from "./dto/problem.dto.js";
 
@@ -74,6 +78,65 @@ class ProblemRepository {
 			.limit(1);
 
 		return result[0] ?? null;
+	}
+
+	private formatTestCases(
+		testCaseRow: typeof test_case.$inferSelect | null | undefined,
+	) {
+		if (!testCaseRow) {
+			return [];
+		}
+
+		const inputData = Array.isArray(testCaseRow.input)
+			? testCaseRow.input
+			: testCaseRow.input !== null && typeof testCaseRow.input === "object"
+				? Object.values(testCaseRow.input as Record<string, unknown>)
+				: [];
+
+		const outputData = Array.isArray(testCaseRow.output)
+			? testCaseRow.output
+			: testCaseRow.output !== null && typeof testCaseRow.output === "object"
+				? Object.values(testCaseRow.output as Record<string, unknown>)
+				: [];
+
+		return inputData.map((input, index) => ({
+			input,
+			output: outputData[index],
+		}));
+	}
+
+	private async getProblemBundle(id: string, limit?: number) {
+		const problemData = await this.getById(id);
+		if (!problemData) {
+			return null;
+		}
+
+		const [testCaseRow] = await db
+			.select()
+			.from(test_case)
+			.where(eq(test_case.problem_id, id))
+			.limit(1);
+
+		const codeStubs = await db
+			.select()
+			.from(code_stub)
+			.where(eq(code_stub.problem_id, id));
+
+		const testCases = this.formatTestCases(testCaseRow).slice(0, limit);
+
+		return {
+			...problemData,
+			code_stubs: codeStubs,
+			test_cases: testCases,
+		};
+	}
+
+	async getByIdWithThreeTestCases(id: string) {
+		return this.getProblemBundle(id, 3);
+	}
+
+	async getByIdWithAllTestCases(id: string) {
+		return this.getProblemBundle(id);
 	}
 
 	async update(id: string, data: Partial<ProblemDto>) {

@@ -37,6 +37,22 @@ class ProblemService {
 		return problem;
 	}
 
+	async getByIdWithThreeTestCases(id: string) {
+		const problem = await this.problemRepository.getByIdWithThreeTestCases(id);
+		if (!problem) {
+			throw ApiError.notFound("Problem not found");
+		}
+		return problem;
+	}
+
+	async getByIdWithAllTestCases(id: string) {
+		const problem = await this.problemRepository.getByIdWithAllTestCases(id);
+		if (!problem) {
+			throw ApiError.notFound("Problem not found");
+		}
+		return problem;
+	}
+
 	async update(userId: string, problemId: string, data: ProblemUpdateDto) {
 		const problem = await this.problemRepository.getById(problemId);
 

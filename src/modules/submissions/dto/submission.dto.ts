@@ -1,13 +1,16 @@
 import z from "zod";
+import { AVIABLE_CODE_LANGUAGES } from "../../../common/constants/code-language.js";
 
-const SubmissionDTO = z.object({
-	problemId: z.string(),
-	userId: z.string(),
+const CreateSubmissionDTO = z.object({
 	code: z.string(),
-	status: z.enum(["pending", "accepted", "rejected"]),
-	result: z.string().optional(),
+	language: z.enum([
+		AVIABLE_CODE_LANGUAGES.CPP,
+		AVIABLE_CODE_LANGUAGES.JAVA,
+		AVIABLE_CODE_LANGUAGES.JAVASCRIPT,
+		AVIABLE_CODE_LANGUAGES.PYTHON,
+	]),
 });
 
-export type SubmissionDTOType = z.infer<typeof SubmissionDTO>;
+export type SubmissionDTOType = z.infer<typeof CreateSubmissionDTO>;
 
-export { SubmissionDTO };
+export { CreateSubmissionDTO };
