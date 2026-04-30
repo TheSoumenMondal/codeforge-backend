@@ -28,7 +28,7 @@ const problemController = new ProblemController(
 );
 const authMiddleware = new AuthMiddleware();
 
-const problemRouter = express.Router();
+const problemRouter: express.Router = express.Router();
 problemRouter.get(
 	"/problem/ping",
 	basePingController({

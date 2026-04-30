@@ -16,6 +16,8 @@ const envSchema = z.object({
 		.enum(["trace", "debug", "info", "warn", "error", "fatal"])
 		.default("info"),
 	IMAGEKIT_PRIVATE_KEY: z.string(),
+	REDIS_HOST: z.string(),
+	REDIS_PORT: z.string().default("6379"),
 });
 
 type EnvConfig = z.infer<typeof envSchema>;

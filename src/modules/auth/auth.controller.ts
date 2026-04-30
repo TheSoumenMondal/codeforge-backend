@@ -1,5 +1,6 @@
-import asyncHandler from "express-async-handler";
+import type { RequestHandler } from "express";
 import { StatusCodes } from "http-status-codes";
+import asyncHandler from "../../common/utils/async-handler.js";
 import { ApiError } from "../../common/utils/error/api.error.js";
 import type AuthService from "./auth.service.js";
 import { loginDto } from "./dto/login.dto.js";
@@ -11,7 +12,7 @@ class AuthController {
 		this.authService = authService;
 	}
 
-	signup = asyncHandler(async (req, res) => {
+	signup: RequestHandler = asyncHandler(async (req, res) => {
 		const incomingData = req.body;
 		const validatedData = await signupDto.safeParseAsync(incomingData);
 		if (!validatedData.success) {
@@ -28,7 +29,7 @@ class AuthController {
 		});
 	});
 
-	login = asyncHandler(async (req, res) => {
+	login: RequestHandler = asyncHandler(async (req, res) => {
 		const incomingData = req.body;
 		const validatedData = await loginDto.safeParseAsync(incomingData);
 

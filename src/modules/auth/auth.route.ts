@@ -10,7 +10,7 @@ const userRepository = new UserRepository();
 const authService = new AuthService(authRepository, userRepository);
 const authController = new AuthController(authService);
 
-const authRouter = express.Router();
+const authRouter: express.Router = express.Router();
 
 authRouter.get(
 	"/auth/ping",
