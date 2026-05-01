@@ -17,48 +17,14 @@ class TestCaseService {
 		this.problemRepository = problemRepository;
 	}
 
-	private validateInputOutputMatch(input: unknown, output: unknown): void {
-		const getItemCount = (data: unknown): number | null => {
-			if (Array.isArray(data)) {
-				return data.length;
-			}
-			if (data !== null && typeof data === "object") {
-				return Object.keys(data as Record<string, unknown>).length;
-			}
-			return null;
-		};
-
-		const inputCount = getItemCount(input);
-		const outputCount = getItemCount(output);
-
-		if (inputCount === null || outputCount === null) {
-			return;
-		}
-
-		if (inputCount !== outputCount) {
-			throw ApiError.invalid(
-				`Input and output must have the same number of items. Input has ${inputCount} items, output has ${outputCount} items.`,
-			);
-		}
-	}
-
 	async createTestCase(
 		problemId: string,
 		testCaseData: CreateTestCaseDtoType,
 		userId: string,
 	) {
-		this.validateInputOutputMatch(testCaseData.input, testCaseData.output);
-
 		const problem = await this.problemRepository.getById(problemId);
 		if (!problem) {
 			throw ApiError.notFound("Problem not found");
-		}
-
-		const alreadyExistingTestCase =
-			await this.testCaseRepository.getTestCasesByProblemId(problemId);
-
-		if (alreadyExistingTestCase) {
-			throw ApiError.conflict("Test case already exists for this problem");
 		}
 
 		if (problem.created_by !== userId) {
@@ -84,25 +50,25 @@ class TestCaseService {
 		if (!problem) {
 			throw ApiError.notFound("Problem not found");
 		}
-		const existingTestCase =
-			await this.testCaseRepository.getTestCasesByProblemId(problemId);
 
-		if (!existingTestCase) {
-			throw ApiError.notFound("Test case not found for this problem");
-		}
 		if (problem.created_by !== userId) {
 			throw ApiError.forbidden(
 				"You are not allowed to update test case for this problem",
 			);
 		}
 
-		const inputToValidate = testCaseData.input ?? existingTestCase.input;
-		const outputToValidate = testCaseData.output ?? existingTestCase.output;
+		const testCaseId = testCaseData.testCaseId;
+		if (!testCaseId) {
+			throw ApiError.invalid("testCaseId is required for update");
+		}
 
-		this.validateInputOutputMatch(inputToValidate, outputToValidate);
+		const existingTestCase = await this.testCaseRepository.getById(testCaseId);
+		if (!existingTestCase) {
+			throw ApiError.notFound("Test case not found");
+		}
 
 		const updatedTestCase = await this.testCaseRepository.update(
-			problemId,
+			testCaseId,
 			testCaseData,
 		);
 
@@ -112,41 +78,34 @@ class TestCaseService {
 	async getTestCasesByProblemId(problemId: string) {
 		const testCases =
 			await this.testCaseRepository.getTestCasesByProblemId(problemId);
-		if (!testCases) {
+		if (!testCases || testCases.length === 0) {
 			throw ApiError.notFound("Test cases not found for this problem");
 		}
-		return testCases;
+
+		// map DB rows to api shape (input, output)
+		return testCases.map((r) => ({
+			id: r.id,
+			input: r.input,
+			output: r.expected_output,
+			totalExecutionTime: r.total_execution_time,
+			createdAt: r.created_at,
+			updatedAt: r.updated_at,
+		}));
 	}
 
 	async getPublicTestCasesByProblemId(problemId: string) {
 		const testCases =
 			await this.testCaseRepository.getTestCasesByProblemId(problemId);
-		if (!testCases) {
+		if (!testCases || testCases.length === 0) {
 			throw ApiError.notFound("Test cases not found for this problem");
 		}
 
-		const inputData = Array.isArray(testCases.input)
-			? testCases.input
-			: testCases.input !== null && typeof testCases.input === "object"
-				? Object.values(testCases.input as Record<string, unknown>)
-				: [];
-		const outputData = Array.isArray(testCases.output)
-			? testCases.output
-			: testCases.output !== null && typeof testCases.output === "object"
-				? Object.values(testCases.output as Record<string, unknown>)
-				: [];
-
-		const publicTestCases = inputData
+		return testCases
 			.slice(0, 3)
-			.map((input: unknown, index: number) => ({
-				input,
-				output: outputData[index],
-			}));
-
-		return publicTestCases;
+			.map((r) => ({ input: r.input, output: r.expected_output }));
 	}
 
-	async deleteTestCase(problemId: string, userId: string) {
+	async deleteTestCase(problemId: string, testCaseId: string, userId: string) {
 		const problem = await this.problemRepository.getById(problemId);
 		if (!problem) {
 			throw ApiError.notFound("Problem not found");
@@ -157,14 +116,13 @@ class TestCaseService {
 				"You are not allowed to delete test case for this problem",
 			);
 		}
-		const existingTestCase =
-			await this.testCaseRepository.getTestCasesByProblemId(problemId);
 
+		const existingTestCase = await this.testCaseRepository.getById(testCaseId);
 		if (!existingTestCase) {
 			throw ApiError.notFound("Test case not found for this problem");
 		}
 
-		await this.testCaseRepository.delete(problemId);
+		await this.testCaseRepository.delete(testCaseId);
 	}
 }
 

@@ -1,5 +1,5 @@
 {
-	"id": "9dd89ae7-f31b-4bcf-b102-dc57991f6e3b",
+	"id": "f780cbc9-0c8e-44bf-b590-01c16ee2ec2a",
 	"prevId": "00000000-0000-0000-0000-000000000000",
 	"version": "7",
 	"dialect": "postgresql",
@@ -334,15 +334,15 @@
 					"primaryKey": false,
 					"notNull": true
 				},
-				"input": {
-					"name": "input",
-					"type": "json",
+				"input_test_case": {
+					"name": "input_test_case",
+					"type": "text",
 					"primaryKey": false,
 					"notNull": true
 				},
-				"output": {
-					"name": "output",
-					"type": "json",
+				"expected_output_test_case": {
+					"name": "expected_output_test_case",
+					"type": "text",
 					"primaryKey": false,
 					"notNull": true
 				},
@@ -373,6 +373,90 @@
 					"tableFrom": "test_case",
 					"tableTo": "problem",
 					"columnsFrom": ["problem_id"],
+					"columnsTo": ["id"],
+					"onDelete": "cascade",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"policies": {},
+			"checkConstraints": {},
+			"isRLSEnabled": false
+		},
+		"public.code_submission": {
+			"name": "code_submission",
+			"schema": "",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "uuid",
+					"primaryKey": true,
+					"notNull": true,
+					"default": "gen_random_uuid()"
+				},
+				"problem_id": {
+					"name": "problem_id",
+					"type": "uuid",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"user_id": {
+					"name": "user_id",
+					"type": "uuid",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"code": {
+					"name": "code",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"language": {
+					"name": "language",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"status": {
+					"name": "status",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false,
+					"default": "'pending'"
+				},
+				"result": {
+					"name": "result",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "''"
+				},
+				"created_at": {
+					"name": "created_at",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "now()"
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {
+				"code_submission_problem_id_problem_id_fk": {
+					"name": "code_submission_problem_id_problem_id_fk",
+					"tableFrom": "code_submission",
+					"tableTo": "problem",
+					"columnsFrom": ["problem_id"],
+					"columnsTo": ["id"],
+					"onDelete": "cascade",
+					"onUpdate": "no action"
+				},
+				"code_submission_user_id_user_id_fk": {
+					"name": "code_submission_user_id_user_id_fk",
+					"tableFrom": "code_submission",
+					"tableTo": "user",
+					"columnsFrom": ["user_id"],
 					"columnsTo": ["id"],
 					"onDelete": "cascade",
 					"onUpdate": "no action"

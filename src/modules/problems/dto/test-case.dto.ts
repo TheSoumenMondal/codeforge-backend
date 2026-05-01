@@ -1,14 +1,15 @@
 import z from "zod";
 
 const CreateTestCaseDto = z.object({
-	input: z.json(),
-	output: z.json(),
+	input: z.string(),
+	output: z.string(),
 	totalExecutionTime: z.number(),
 });
 
 const UpdateTestCaseDto = z.object({
-	input: z.json().optional(),
-	output: z.json().optional(),
+	testCaseId: z.string().optional(),
+	input: z.string().optional(),
+	output: z.string().optional(),
 	totalExecutionTime: z.number().optional(),
 });
 

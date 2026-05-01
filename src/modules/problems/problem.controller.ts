@@ -405,7 +405,11 @@ class ProblemController {
 		if (!problemId || typeof problemId !== "string") {
 			throw ApiError.invalid("Invalid problem ID");
 		}
-		await this.testCaseService.deleteTestCase(problemId, userId);
+		const { testCaseId } = req.body;
+		if (!testCaseId || typeof testCaseId !== "string") {
+			throw ApiError.invalid("testCaseId is required to delete a test case");
+		}
+		await this.testCaseService.deleteTestCase(problemId, testCaseId, userId);
 		res.status(StatusCodes.OK).json({
 			success: true,
 			message: "Test case deleted successfully",

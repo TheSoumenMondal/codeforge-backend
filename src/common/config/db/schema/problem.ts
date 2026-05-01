@@ -2,7 +2,6 @@ import { relations, sql } from "drizzle-orm";
 import {
 	check,
 	integer,
-	json,
 	pgEnum,
 	pgTable,
 	text,
@@ -44,8 +43,8 @@ export const test_case = pgTable("test_case", {
 			onDelete: "cascade",
 		})
 		.notNull(),
-	input: json("input").notNull(),
-	output: json("output").notNull(),
+	input: text("input_test_case").notNull(),
+	expected_output: text("expected_output_test_case").notNull(),
 	total_execution_time: integer("total_execution_time").notNull(),
 	created_at: timestamp("created_at").notNull().defaultNow(),
 	updated_at: timestamp("updated_at")

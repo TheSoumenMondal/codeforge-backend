@@ -80,49 +80,32 @@ class ProblemRepository {
 		return result[0] ?? null;
 	}
 
-	private formatTestCases(
-		testCaseRow: typeof test_case.$inferSelect | null | undefined,
-	) {
-		if (!testCaseRow) {
-			return [];
-		}
-
-		const inputData = Array.isArray(testCaseRow.input)
-			? testCaseRow.input
-			: testCaseRow.input !== null && typeof testCaseRow.input === "object"
-				? Object.values(testCaseRow.input as Record<string, unknown>)
-				: [];
-
-		const outputData = Array.isArray(testCaseRow.output)
-			? testCaseRow.output
-			: testCaseRow.output !== null && typeof testCaseRow.output === "object"
-				? Object.values(testCaseRow.output as Record<string, unknown>)
-				: [];
-
-		return inputData.map((input, index) => ({
-			input,
-			output: outputData[index],
-		}));
-	}
-
 	private async getProblemBundle(id: string, limit?: number) {
 		const problemData = await this.getById(id);
 		if (!problemData) {
 			return null;
 		}
 
-		const [testCaseRow] = await db
+		const testCaseRows = await db
 			.select()
 			.from(test_case)
-			.where(eq(test_case.problem_id, id))
-			.limit(1);
+			.where(eq(test_case.problem_id, id));
 
 		const codeStubs = await db
 			.select()
 			.from(code_stub)
 			.where(eq(code_stub.problem_id, id));
 
-		const testCases = this.formatTestCases(testCaseRow).slice(0, limit);
+		const testCases = testCaseRows
+			.map((r) => ({
+				id: r.id,
+				input: r.input,
+				output: r.expected_output,
+				totalExecutionTime: r.total_execution_time,
+				createdAt: r.created_at,
+				updatedAt: r.updated_at,
+			}))
+			.slice(0, limit);
 
 		return {
 			...problemData,

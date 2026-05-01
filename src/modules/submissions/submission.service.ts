@@ -1,3 +1,4 @@
+import { logger } from "../../common/config/logger/pino-logger.js";
 import { addSubmissionJob } from "../../common/producer/submission.producer.js";
 import { ApiError } from "../../common/utils/error/api.error.js";
 import type ProblemRepository from "../problems/problem.repository.js";
@@ -32,6 +33,8 @@ class SubmissionService {
 			data,
 		);
 
+		logger.info(submission);
+
 		const submissionId = submission?.id;
 
 		if (!submissionId) {
@@ -40,14 +43,6 @@ class SubmissionService {
 
 		await addSubmissionJob({
 			submissionId,
-			problemData: {
-				id: problemData.id,
-				inputTestCases: problemData.test_cases.map((tc) => tc.input),
-				outputTestCases: problemData.test_cases.map((tc) => tc.output),
-			},
-			userId,
-			code: data.code,
-			language: data.language,
 		});
 
 		return submission;
