@@ -80,11 +80,23 @@ export class JsExecutor implements CodeExecutionStrategy {
 					continue;
 				}
 
+				const tcStartTime = Date.now();
 				const output = await this.runExec(container, [
 					"/bin/sh",
 					"-c",
-					`printf "%s" "${input}" | node Main.js`,
+					`printf "%s" "${input}" | timeout 10s node Main.js`,
 				]);
+				const timeTaken = Date.now() - tcStartTime;
+
+				if (timeTaken >= 9500) {
+					// Slightly less than 10s to account for overhead
+					return {
+						output: "Time Limit Exceeded",
+						status: "TIME_LIMIT_EXCEEDED",
+						timeTaken: Date.now() - startTime,
+						memoryUsed: 0,
+					};
+				}
 
 				const passed = output.trim() === expected.trim();
 
@@ -109,6 +121,8 @@ export class JsExecutor implements CodeExecutionStrategy {
 				timeTaken: Date.now() - startTime,
 				memoryUsed: 0,
 			};
+		} finally {
+			await container.stop();
 		}
 	}
 }

@@ -31,6 +31,21 @@ class EvaluationService {
 
 		return data;
 	}
+
+	async updateEvaluationResult(
+		submissionId: string,
+		status: string,
+		result: string,
+	) {
+		if (!submissionId) {
+			throw ApiError.notFound("Submission ID is required");
+		}
+		await this.evaluationRepository.updateEvaluationResult(
+			submissionId,
+			status,
+			result,
+		);
+	}
 }
 
 export { EvaluationService };

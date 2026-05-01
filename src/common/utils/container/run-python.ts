@@ -80,11 +80,22 @@ export class PythonExecutor implements CodeExecutionStrategy {
 					continue;
 				}
 
+				const tcStartTime = Date.now();
 				const output = await this.runExec(container, [
 					"/bin/sh",
 					"-c",
-					`printf "%s" "${input}" | python3 Main.py`,
+					`printf "%s" "${input}" | timeout 10s python3 Main.py`,
 				]);
+				const timeTaken = Date.now() - tcStartTime;
+
+				if (timeTaken >= 9500) {
+					return {
+						output: "Time Limit Exceeded",
+						status: "TIME_LIMIT_EXCEEDED",
+						timeTaken: Date.now() - startTime,
+						memoryUsed: 0,
+					};
+				}
 
 				const passed = output.trim() === expected.trim();
 
@@ -109,6 +120,8 @@ export class PythonExecutor implements CodeExecutionStrategy {
 				timeTaken: Date.now() - startTime,
 				memoryUsed: 0,
 			};
+		} finally {
+			await container.stop();
 		}
 	}
 }

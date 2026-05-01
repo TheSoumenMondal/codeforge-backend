@@ -5,6 +5,7 @@ import { logger } from "../config/logger/pino-logger.js";
 import { createRedisClient } from "../config/redis.js";
 import { JOB_NAME } from "../constants/job.js";
 import { QUEUES } from "../constants/queues.js";
+import { SUBMISSION_STATUS } from "../constants/submission-status.js";
 import createExecutor from "../utils/executor-factory.js";
 
 const configureEvaluationWorker = async () => {
@@ -39,13 +40,26 @@ const configureEvaluationWorker = async () => {
 					expected_output_test_case: tc.output,
 				}));
 
-				const fullCode = [data.startCode, data.code, data.endCode]
-					.filter(Boolean)
-					.join("\n");
-
-				const result = await executor.executeCode(fullCode, testCases);
+				const result = await executor.executeCode(data.code, testCases);
 				logger.info(
 					`Evaluation result for submission with id ${job.data.submissionId}: ${JSON.stringify(result)}`,
+				);
+
+				let dbStatus = SUBMISSION_STATUS.RUNTIME_ERROR;
+				if (result.status === "SUCCESS") {
+					dbStatus = SUBMISSION_STATUS.ACCEPTED;
+				} else if (result.status === "FAILED") {
+					dbStatus = SUBMISSION_STATUS.WRONG_ANSWER;
+				} else if (result.status === "COMPILE_ERROR") {
+					dbStatus = SUBMISSION_STATUS.RUNTIME_ERROR;
+				} else if (result.status === "TIME_LIMIT_EXCEEDED") {
+					dbStatus = SUBMISSION_STATUS.TIME_LIMIT_EXCEED;
+				}
+
+				await evaluationService.updateEvaluationResult(
+					job.data.submissionId,
+					dbStatus,
+					result.output,
 				);
 			} else {
 				logger.warn(
