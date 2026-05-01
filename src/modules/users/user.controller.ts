@@ -1,5 +1,6 @@
-import expressAsyncHandler from "express-async-handler";
+import type { RequestHandler } from "express";
 import { StatusCodes } from "http-status-codes";
+import asyncHandler from "../../common/utils/async-handler.js";
 import { ApiError } from "../../common/utils/error/api.error.js";
 import { createUserDto, updateUserDto } from "./dto/user.dto.js";
 import type UserService from "./user.service.js";
@@ -11,7 +12,7 @@ class UserController {
 		this.userService = userService;
 	}
 
-	create = expressAsyncHandler(async (req, res) => {
+	create: RequestHandler = asyncHandler(async (req, res) => {
 		const incomingData = req.body;
 		const parsedData = await createUserDto.safeParseAsync(incomingData);
 
@@ -33,7 +34,7 @@ class UserController {
 		});
 	});
 
-	getProfile = expressAsyncHandler(async (req, res) => {
+	getProfile: RequestHandler = asyncHandler(async (req, res) => {
 		const userId = req.user?.id;
 		if (!userId) {
 			throw ApiError.unauthorized("You are not authenticated.");
@@ -47,7 +48,7 @@ class UserController {
 		});
 	});
 
-	updateProfile = expressAsyncHandler(async (req, res) => {
+	updateProfile: RequestHandler = asyncHandler(async (req, res) => {
 		const incomingData = req.body;
 		const parsedData = await updateUserDto.safeParseAsync(incomingData);
 
@@ -74,7 +75,7 @@ class UserController {
 		});
 	});
 
-	addAvatar = expressAsyncHandler(async (req, res) => {
+	addAvatar: RequestHandler = asyncHandler(async (req, res) => {
 		const userId = req.user?.id;
 		if (!userId) {
 			throw ApiError.unauthorized("You are not authenticated.");

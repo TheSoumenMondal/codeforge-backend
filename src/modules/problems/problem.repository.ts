@@ -1,7 +1,11 @@
 import { and, eq, sql } from "drizzle-orm";
 import { db } from "../../common/config/db/index.js";
 import { problemLikes } from "../../common/config/db/schema/like.js";
-import { problem } from "../../common/config/db/schema/problem.js";
+import {
+	code_stub,
+	problem,
+	test_case,
+} from "../../common/config/db/schema/problem.js";
 import { user } from "../../common/config/db/schema/user.js";
 import type { ProblemDto } from "./dto/problem.dto.js";
 
@@ -74,6 +78,48 @@ class ProblemRepository {
 			.limit(1);
 
 		return result[0] ?? null;
+	}
+
+	private async getProblemBundle(id: string, limit?: number) {
+		const problemData = await this.getById(id);
+		if (!problemData) {
+			return null;
+		}
+
+		const testCaseRows = await db
+			.select()
+			.from(test_case)
+			.where(eq(test_case.problem_id, id));
+
+		const codeStubs = await db
+			.select()
+			.from(code_stub)
+			.where(eq(code_stub.problem_id, id));
+
+		const testCases = testCaseRows
+			.map((r) => ({
+				id: r.id,
+				input: r.input,
+				output: r.expected_output,
+				totalExecutionTime: r.total_execution_time,
+				createdAt: r.created_at,
+				updatedAt: r.updated_at,
+			}))
+			.slice(0, limit);
+
+		return {
+			...problemData,
+			code_stubs: codeStubs,
+			test_cases: testCases,
+		};
+	}
+
+	async getByIdWithThreeTestCases(id: string) {
+		return this.getProblemBundle(id, 3);
+	}
+
+	async getByIdWithAllTestCases(id: string) {
+		return this.getProblemBundle(id);
 	}
 
 	async update(id: string, data: Partial<ProblemDto>) {

@@ -12,7 +12,7 @@ class TestCaseRepository {
 			.select()
 			.from(test_case)
 			.where(eq(test_case.problem_id, problemId));
-		return testCases[0] ?? null;
+		return testCases;
 	}
 
 	async create(problemId: string, data: CreateTestCaseDtoType) {
@@ -21,29 +21,38 @@ class TestCaseRepository {
 			.values({
 				problem_id: problemId,
 				input: data.input,
-				output: data.output,
+				expected_output: data.output,
 				total_execution_time: data.totalExecutionTime,
 			})
 			.returning();
 		return testCase[0] ?? null;
 	}
 
-	async update(problemId: string, data: UpdateTestCaseDtoType) {
-		const updatedProblem = await db
+	async getById(testCaseId: string) {
+		const rows = await db
+			.select()
+			.from(test_case)
+			.where(eq(test_case.id, testCaseId))
+			.limit(1);
+		return rows[0] ?? null;
+	}
+
+	async update(testCaseId: string, data: UpdateTestCaseDtoType) {
+		const updated = await db
 			.update(test_case)
 			.set({
 				input: data.input,
-				output: data.output,
+				expected_output: data.output,
 				total_execution_time: data.totalExecutionTime,
 			})
-			.where(eq(test_case.problem_id, problemId))
+			.where(eq(test_case.id, testCaseId))
 			.returning();
 
-		return updatedProblem;
+		return updated[0] ?? null;
 	}
 
-	async delete(problemId: string) {
-		await db.delete(test_case).where(eq(test_case.problem_id, problemId));
+	async delete(testCaseId: string) {
+		await db.delete(test_case).where(eq(test_case.id, testCaseId));
 	}
 }
 

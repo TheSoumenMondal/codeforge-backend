@@ -1,5 +1,6 @@
-import asyncHandler from "express-async-handler";
+import type { RequestHandler } from "express";
 import { StatusCodes } from "http-status-codes";
+import asyncHandler from "../../common/utils/async-handler.js";
 import { ApiError } from "../../common/utils/error/api.error.js";
 import type { CodeStubService } from "./code-stub.service.js";
 import { CreateCodeStubDto, UpdateCodeStubDto } from "./dto/code-stub.dto.js";
@@ -22,7 +23,7 @@ class ProblemController {
 		this.testCaseService = testCaseService;
 	}
 
-	public create = asyncHandler(async (req, res) => {
+	public create: RequestHandler = asyncHandler(async (req, res) => {
 		const incomingData = await ProblemDto.safeParseAsync(req.body);
 		if (!incomingData.success) {
 			throw ApiError.invalid(
@@ -46,7 +47,7 @@ class ProblemController {
 		});
 	});
 
-	public getProblemByFilter = asyncHandler(async (req, res) => {
+	public getProblemByFilter: RequestHandler = asyncHandler(async (req, res) => {
 		const { difficulty } = req.query;
 
 		const problems = await this.problemService.getProblemsByFilter(
@@ -61,12 +62,21 @@ class ProblemController {
 		});
 	});
 
-	public getById = asyncHandler(async (req, res) => {
+	public getById: RequestHandler = asyncHandler(async (req, res) => {
 		const id = req.params.id;
 		if (!id || typeof id !== "string") {
 			throw ApiError.invalid("Invalid problem ID");
 		}
-		const problem = await this.problemService.getById(id);
+
+		const variant = req.query.variant;
+		if (typeof variant === "string" && !["three", "all"].includes(variant)) {
+			throw ApiError.invalid("Invalid variant. Use three or all.");
+		}
+
+		const problem =
+			typeof variant === "string" && variant === "all"
+				? await this.problemService.getByIdWithAllTestCases(id)
+				: await this.problemService.getByIdWithThreeTestCases(id);
 		res.status(StatusCodes.OK).json({
 			success: true,
 			message: "Problem retrieved successfully",
@@ -75,7 +85,7 @@ class ProblemController {
 		});
 	});
 
-	public update = asyncHandler(async (req, res) => {
+	public update: RequestHandler = asyncHandler(async (req, res) => {
 		const userId = req.user?.id;
 		if (!userId) {
 			throw ApiError.unauthorized("User not authenticated");
@@ -107,7 +117,7 @@ class ProblemController {
 		});
 	});
 
-	public delete = asyncHandler(async (req, res) => {
+	public delete: RequestHandler = asyncHandler(async (req, res) => {
 		const userId = req.user?.id;
 		if (!userId) {
 			throw ApiError.unauthorized("User not authenticated");
@@ -127,7 +137,7 @@ class ProblemController {
 		});
 	});
 
-	public toggleLike = asyncHandler(async (req, res) => {
+	public toggleLike: RequestHandler = asyncHandler(async (req, res) => {
 		const userId = req.user?.id;
 		if (!userId) {
 			throw ApiError.unauthorized("User not authenticated");
@@ -147,7 +157,7 @@ class ProblemController {
 		});
 	});
 
-	public createCodeStub = asyncHandler(async (req, res) => {
+	public createCodeStub: RequestHandler = asyncHandler(async (req, res) => {
 		const userId = req.user?.id;
 		if (!userId) {
 			throw ApiError.unauthorized("User not authenticated");
@@ -173,7 +183,7 @@ class ProblemController {
 		});
 	});
 
-	public updateCodeStub = asyncHandler(async (req, res) => {
+	public updateCodeStub: RequestHandler = asyncHandler(async (req, res) => {
 		const userId = req.user?.id;
 		if (!userId) {
 			throw ApiError.unauthorized("User not authenticated");
@@ -211,7 +221,7 @@ class ProblemController {
 		}
 	});
 
-	public deleteCodeStub = asyncHandler(async (req, res) => {
+	public deleteCodeStub: RequestHandler = asyncHandler(async (req, res) => {
 		const userId = req.user?.id;
 		if (!userId) {
 			throw ApiError.unauthorized("User not authenticated");
@@ -231,59 +241,63 @@ class ProblemController {
 		});
 	});
 
-	public getAllCodeStubsByProblemId = asyncHandler(async (req, res) => {
-		const problemId = req.params.id;
-		if (!problemId || typeof problemId !== "string") {
-			throw ApiError.invalid("Invalid problem ID");
-		}
+	public getAllCodeStubsByProblemId: RequestHandler = asyncHandler(
+		async (req, res) => {
+			const problemId = req.params.id;
+			if (!problemId || typeof problemId !== "string") {
+				throw ApiError.invalid("Invalid problem ID");
+			}
 
-		const codeStubs =
-			await this.codeStubService.getAllCodeStubsByProblemId(problemId);
-		res.status(StatusCodes.OK).json({
-			success: true,
-			message: "Code stubs retrieved successfully",
-			data: codeStubs,
-			error: null,
-		});
-	});
+			const codeStubs =
+				await this.codeStubService.getAllCodeStubsByProblemId(problemId);
+			res.status(StatusCodes.OK).json({
+				success: true,
+				message: "Code stubs retrieved successfully",
+				data: codeStubs,
+				error: null,
+			});
+		},
+	);
 
-	public getAllCodeStubsByProblemIdFiltered = asyncHandler(async (req, res) => {
-		const problemId = req.params.id;
-		if (!problemId || typeof problemId !== "string") {
-			throw ApiError.invalid("Invalid problem ID");
-		}
+	public getAllCodeStubsByProblemIdFiltered: RequestHandler = asyncHandler(
+		async (req, res) => {
+			const problemId = req.params.id;
+			if (!problemId || typeof problemId !== "string") {
+				throw ApiError.invalid("Invalid problem ID");
+			}
 
-		const languageParam = req.query.language;
-		const allowedLanguages = ["cpp", "java", "python", "js"] as const;
-		const language =
-			typeof languageParam === "string"
-				? languageParam === "javascript"
-					? "js"
-					: allowedLanguages.includes(
-								languageParam as (typeof allowedLanguages)[number],
-							)
-						? (languageParam as (typeof allowedLanguages)[number])
-						: undefined
-				: undefined;
+			const languageParam = req.query.language;
+			const allowedLanguages = ["cpp", "java", "python", "js"] as const;
+			const language =
+				typeof languageParam === "string"
+					? languageParam === "javascript"
+						? "js"
+						: allowedLanguages.includes(
+									languageParam as (typeof allowedLanguages)[number],
+								)
+							? (languageParam as (typeof allowedLanguages)[number])
+							: undefined
+					: undefined;
 
-		if (typeof languageParam === "string" && language === undefined) {
-			throw ApiError.invalid("Invalid language filter");
-		}
+			if (typeof languageParam === "string" && language === undefined) {
+				throw ApiError.invalid("Invalid language filter");
+			}
 
-		const codeStubs = await this.codeStubService.getAllCodeStubsByProblemId(
-			problemId,
-			language,
-		);
+			const codeStubs = await this.codeStubService.getAllCodeStubsByProblemId(
+				problemId,
+				language,
+			);
 
-		res.status(StatusCodes.OK).json({
-			success: true,
-			message: "Code stubs retrieved successfully",
-			data: codeStubs,
-			error: null,
-		});
-	});
+			res.status(StatusCodes.OK).json({
+				success: true,
+				message: "Code stubs retrieved successfully",
+				data: codeStubs,
+				error: null,
+			});
+		},
+	);
 
-	public createTestCase = asyncHandler(async (req, res) => {
+	public createTestCase: RequestHandler = asyncHandler(async (req, res) => {
 		const userId = req.user?.id;
 		if (!userId) {
 			throw ApiError.unauthorized("User not authenticated");
@@ -314,7 +328,7 @@ class ProblemController {
 		});
 	});
 
-	public updateTestCase = asyncHandler(async (req, res) => {
+	public updateTestCase: RequestHandler = asyncHandler(async (req, res) => {
 		const userId = req.user?.id;
 		if (!userId) {
 			throw ApiError.unauthorized("User not authenticated");
@@ -347,37 +361,41 @@ class ProblemController {
 		});
 	});
 
-	public getAllTestCasesByProblemId = asyncHandler(async (req, res) => {
-		const problemId = req.params.id;
-		if (!problemId || typeof problemId !== "string") {
-			throw ApiError.invalid("Invalid problem ID");
-		}
-		const testCases =
-			await this.testCaseService.getTestCasesByProblemId(problemId);
-		res.status(StatusCodes.OK).json({
-			success: true,
-			message: "Test cases retrieved successfully",
-			data: testCases,
-			error: null,
-		});
-	});
+	public getAllTestCasesByProblemId: RequestHandler = asyncHandler(
+		async (req, res) => {
+			const problemId = req.params.id;
+			if (!problemId || typeof problemId !== "string") {
+				throw ApiError.invalid("Invalid problem ID");
+			}
+			const testCases =
+				await this.testCaseService.getTestCasesByProblemId(problemId);
+			res.status(StatusCodes.OK).json({
+				success: true,
+				message: "Test cases retrieved successfully",
+				data: testCases,
+				error: null,
+			});
+		},
+	);
 
-	public getPublicTestCasesByProblemId = asyncHandler(async (req, res) => {
-		const problemId = req.params.id;
-		if (!problemId || typeof problemId !== "string") {
-			throw ApiError.invalid("Invalid problem ID");
-		}
-		const testCases =
-			await this.testCaseService.getPublicTestCasesByProblemId(problemId);
-		res.status(StatusCodes.OK).json({
-			success: true,
-			message: "Public test cases retrieved successfully",
-			data: testCases,
-			error: null,
-		});
-	});
+	public getPublicTestCasesByProblemId: RequestHandler = asyncHandler(
+		async (req, res) => {
+			const problemId = req.params.id;
+			if (!problemId || typeof problemId !== "string") {
+				throw ApiError.invalid("Invalid problem ID");
+			}
+			const testCases =
+				await this.testCaseService.getPublicTestCasesByProblemId(problemId);
+			res.status(StatusCodes.OK).json({
+				success: true,
+				message: "Public test cases retrieved successfully",
+				data: testCases,
+				error: null,
+			});
+		},
+	);
 
-	public deleteTestCase = asyncHandler(async (req, res) => {
+	public deleteTestCase: RequestHandler = asyncHandler(async (req, res) => {
 		const userId = req.user?.id;
 		if (!userId) {
 			throw ApiError.unauthorized("User not authenticated");
@@ -387,7 +405,11 @@ class ProblemController {
 		if (!problemId || typeof problemId !== "string") {
 			throw ApiError.invalid("Invalid problem ID");
 		}
-		await this.testCaseService.deleteTestCase(problemId, userId);
+		const { testCaseId } = req.body;
+		if (!testCaseId || typeof testCaseId !== "string") {
+			throw ApiError.invalid("testCaseId is required to delete a test case");
+		}
+		await this.testCaseService.deleteTestCase(problemId, testCaseId, userId);
 		res.status(StatusCodes.OK).json({
 			success: true,
 			message: "Test case deleted successfully",

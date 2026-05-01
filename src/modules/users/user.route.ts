@@ -12,7 +12,7 @@ const userController = new UserController(userService);
 const authMiddleware = new AuthMiddleware();
 const uploadMiddleware = new UploadMilleware(5 * 1024 * 1024).upload;
 
-const userRouter = express.Router();
+const userRouter: express.Router = express.Router();
 userRouter.get(
 	"/user/ping",
 	basePingController({
