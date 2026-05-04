@@ -1,3 +1,4 @@
+import cors from "cors";
 import express from "express";
 import { httpLogger } from "./common/config/logger/pino-http-logger.js";
 import { envConfig } from "./common/config/server.config.js";
@@ -12,6 +13,7 @@ class ExpressApp {
 	private app: express.Application;
 	constructor() {
 		this.app = express();
+		this.configureCors();
 		this.configureMiddlewares();
 		this.configureRoutes();
 		this.configureErrorHandler();
@@ -26,6 +28,15 @@ class ExpressApp {
 		this.app.use(express.urlencoded({ extended: true }));
 		this.app.use(express.text());
 		this.app.use(httpLogger);
+	}
+
+	private configureCors(): void {
+		this.app.use(
+			cors({
+				origin: envConfig.CORS_ORIGIN,
+				credentials: true,
+			}),
+		);
 	}
 
 	private configureRoutes(): void {
