@@ -38,15 +38,34 @@ class ProblemRepository {
 	}
 
 	async getProblemsByFilter(difficulty?: string) {
+		const selector = {
+			id: problem.id,
+			title: problem.title,
+			description: problem.description,
+			difficulty: problem.difficulty,
+			created_at: problem.created_at,
+			updated_at: problem.updated_at,
+			creator: {
+				id: user.id,
+				name: user.name,
+				avatar_url: user.avatar_url,
+			},
+		};
+
 		if (difficulty) {
 			return await db
-				.select()
+				.select(selector)
 				.from(problem)
+				.leftJoin(user, eq(problem.created_by, user.id))
 				.where(
 					eq(problem.difficulty, difficulty as "easy" | "medium" | "hard"),
 				);
 		}
-		return await db.select().from(problem);
+
+		return await db
+			.select(selector)
+			.from(problem)
+			.leftJoin(user, eq(problem.created_by, user.id));
 	}
 
 	async getById(id: string) {
