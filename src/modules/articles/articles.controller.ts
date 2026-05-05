@@ -36,6 +36,21 @@ class ArticleController {
 			error: null,
 		});
 	});
+
+	public getArticleBySlug: RequestHandler = asyncHandler(async (req, res) => {
+		const slug = req.params.slug;
+		if (!slug || typeof slug !== "string") {
+			throw ApiError.invalid("Invalid slug");
+		}
+		const article = await this.articleService.findArticleBySlug(slug);
+
+		res.status(StatusCodes.OK).json({
+			success: true,
+			message: "Article fetched successfully",
+			data: article,
+			error: null,
+		});
+	});
 }
 
 export default ArticleController;

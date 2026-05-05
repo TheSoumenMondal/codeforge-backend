@@ -18,4 +18,9 @@ articleRouter.post(
 	articleController.createArticle.bind(articleController),
 );
 
+articleRouter.get(
+	"/article/:slug",
+	articleController.getArticleBySlug.bind(articleController),
+);
+
 export default articleRouter;

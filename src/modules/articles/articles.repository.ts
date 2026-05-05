@@ -72,6 +72,15 @@ class ArticleRepository {
 
 		return rows[0] ?? null;
 	}
+
+	async findBySlug(slug: string) {
+		const esistingSlug = await db
+			.select()
+			.from(article)
+			.where(eq(article.slug, slug))
+			.limit(1);
+		return esistingSlug[0] ?? null;
+	}
 }
 
 export default ArticleRepository;
