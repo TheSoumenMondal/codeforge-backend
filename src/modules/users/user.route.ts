@@ -20,8 +20,6 @@ userRouter.get(
 	}),
 );
 
-userRouter.post("/user", userController.create.bind(userController));
-
 userRouter.get(
 	"/user/profile",
 	authMiddleware.isAuthenticated,
