@@ -28,4 +28,9 @@ articleRouter.get(
 	articleController.getArticleById.bind(articleController),
 );
 
+articleRouter.get(
+	"/article",
+	articleController.getAllArticles.bind(articleController),
+);
+
 export default articleRouter;

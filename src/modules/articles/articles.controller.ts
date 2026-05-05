@@ -66,6 +66,16 @@ class ArticleController {
 			error: null,
 		});
 	});
+
+	public getAllArticles: RequestHandler = asyncHandler(async (req, res) => {
+		const articles = await this.articleService.getAllArticles();
+		res.status(StatusCodes.OK).json({
+			success: true,
+			message: "Articles fetched successfully",
+			data: articles,
+			error: null,
+		});
+	});
 }
 
 export default ArticleController;

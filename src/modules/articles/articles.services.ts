@@ -27,6 +27,10 @@ class ArticleService {
 		}
 		return article;
 	}
+
+	async getAllArticles() {
+		return this.articleRepository.getAll();
+	}
 }
 
 export default ArticleService;

@@ -90,6 +90,11 @@ class ArticleRepository {
 			.limit(1);
 		return articleData[0] ?? null;
 	}
+
+	async getAll() {
+		const articles = await db.select().from(article);
+		return articles;
+	}
 }
 
 export default ArticleRepository;
