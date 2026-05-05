@@ -1,4 +1,5 @@
-import { type CreatePostDto } from "./dto/post.dto.js";
+import { ApiError } from "../../common/utils/error/api.error.js";
+import { type CreatePostDto, UpdatePostDto } from "./dto/post.dto.js";
 import type { PostRepository } from "./post.repository.js";
 
 class PostService {
@@ -15,6 +16,18 @@ class PostService {
 	async getAllPosts() {
 		const posts = await this.postRepository.getAll();
 		return posts;
+	}
+
+	async updatePost(userId: string, postId: string, data: UpdatePostDto) {
+		const existingPost = await this.postRepository.getById(postId);
+		if (!existingPost) {
+			throw ApiError.notFound("Post not found.");
+		}
+		if (existingPost.authorId !== userId) {
+			throw ApiError.forbidden("You are not authorized to update this post.");
+		}
+		const updatedPost = await this.postRepository.updatePost(postId, data);
+		return updatedPost;
 	}
 }
 

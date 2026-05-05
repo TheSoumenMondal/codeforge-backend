@@ -19,4 +19,10 @@ postRouter.post(
 
 postRouter.get("/post", postController.getAllPosts.bind(postController));
 
+postRouter.put(
+	"/post/:id",
+	authMiddleware.isAuthenticated.bind(authMiddleware),
+	postController.updatePost.bind(postController),
+);
+
 export { postRouter };
