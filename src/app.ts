@@ -6,6 +6,7 @@ import { basePingController } from "./common/helpers/ping.request.js";
 import { errorHandler } from "./common/utils/error/error-handler.js";
 import articleRouter from "./modules/articles/articles.routes.js";
 import { authRouter } from "./modules/auth/auth.route.js";
+import { postRouter } from "./modules/post/post.route.js";
 import { problemRouter } from "./modules/problems/problem.route.js";
 import { submissionRouter } from "./modules/submissions/submission.route.js";
 import { userRouter } from "./modules/users/user.route.js";
@@ -53,6 +54,7 @@ class ExpressApp {
 		this.app.use(envConfig.API_VERSION_PREFIX, submissionRouter);
 		this.app.use(envConfig.API_VERSION_PREFIX, userRouter);
 		this.app.use(envConfig.API_VERSION_PREFIX, articleRouter);
+		this.app.use(envConfig.API_VERSION_PREFIX, postRouter);
 	}
 
 	private configureErrorHandler(): void {
