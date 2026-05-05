@@ -25,4 +25,10 @@ postRouter.put(
 	postController.updatePost.bind(postController),
 );
 
+postRouter.delete(
+	"/post/:id",
+	authMiddleware.isAuthenticated.bind(authMiddleware),
+	postController.deletePost.bind(postController),
+);
+
 export { postRouter };

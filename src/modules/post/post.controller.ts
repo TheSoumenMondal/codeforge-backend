@@ -86,6 +86,26 @@ class PostController {
 			error: null,
 		});
 	});
+
+	public deletePost: RequestHandler = asyncHandler(async (req, res) => {
+		const userId = req.user?.id;
+		if (!userId) {
+			throw ApiError.unauthorized(
+				"You are not authorized to perform this action.",
+			);
+		}
+		const postId = req.params.id;
+		if (!postId || typeof postId !== "string") {
+			throw ApiError.badRequest("Invalid post ID.");
+		}
+		await this.postService.deletePost(userId, postId);
+		res.status(StatusCodes.OK).json({
+			success: true,
+			message: "Post deleted successfully.",
+			data: null,
+			error: null,
+		});
+	});
 }
 
 export { PostController };

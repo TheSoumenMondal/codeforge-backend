@@ -65,6 +65,10 @@ class PostRepository {
 
 		return updatedPost[0];
 	}
+
+	async deletePost(postId: string) {
+		await db.delete(post).where(eq(post.id, postId));
+	}
 }
 
 export { PostRepository };
