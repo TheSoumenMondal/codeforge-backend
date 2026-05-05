@@ -4,6 +4,7 @@ import { httpLogger } from "./common/config/logger/pino-http-logger.js";
 import { envConfig } from "./common/config/server.config.js";
 import { basePingController } from "./common/helpers/ping.request.js";
 import { errorHandler } from "./common/utils/error/error-handler.js";
+import articleRouter from "./modules/articles/articles.routes.js";
 import { authRouter } from "./modules/auth/auth.route.js";
 import { problemRouter } from "./modules/problems/problem.route.js";
 import { submissionRouter } from "./modules/submissions/submission.route.js";
@@ -51,6 +52,7 @@ class ExpressApp {
 		this.app.use(envConfig.API_VERSION_PREFIX, problemRouter);
 		this.app.use(envConfig.API_VERSION_PREFIX, submissionRouter);
 		this.app.use(envConfig.API_VERSION_PREFIX, userRouter);
+		this.app.use(envConfig.API_VERSION_PREFIX, articleRouter);
 	}
 
 	private configureErrorHandler(): void {
