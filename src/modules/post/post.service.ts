@@ -11,6 +11,11 @@ class PostService {
 		const post = await this.postRepository.create(userId, data);
 		return post;
 	}
+
+	async getAllPosts() {
+		const posts = await this.postRepository.getAll();
+		return posts;
+	}
 }
 
 export { PostService };

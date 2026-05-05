@@ -1,5 +1,7 @@
+import { eq } from "drizzle-orm";
 import { db } from "../../common/config/db/index.js";
 import { post } from "../../common/config/db/schema/post.js";
+import { user } from "../../common/config/db/schema/user.js";
 import { type CreatePostDto } from "./dto/post.dto.js";
 
 class PostRepository {
@@ -16,6 +18,26 @@ class PostRepository {
 			.returning();
 
 		return newPost;
+	}
+
+	async getAll() {
+		const posts = await db
+			.select({
+				id: post.id,
+				title: post.title,
+				content: post.content,
+				images: post.images,
+				tags: post.tags,
+				createdAt: post.createdAt,
+				updatedAt: post.updatedAt,
+				userId: user.id,
+				userName: user.name,
+				userProfileImage: user.avatar_url,
+			})
+			.from(post)
+			.leftJoin(user, eq(user.id, post.authorId));
+
+		return posts;
 	}
 }
 

@@ -17,4 +17,6 @@ postRouter.post(
 	postController.createPost.bind(postController),
 );
 
+postRouter.get("/post", postController.getAllPosts.bind(postController));
+
 export { postRouter };

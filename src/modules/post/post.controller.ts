@@ -38,6 +38,17 @@ class PostController {
 			error: null,
 		});
 	});
+
+	public getAllPosts: RequestHandler = asyncHandler(async (req, res) => {
+		const posts = await this.postService.getAllPosts();
+
+		res.status(StatusCodes.OK).json({
+			success: true,
+			message: "Posts retrieved successfully.",
+			data: posts,
+			error: null,
+		});
+	});
 }
 
 export { PostController };
