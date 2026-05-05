@@ -15,6 +15,20 @@
 			"when": 1777921590594,
 			"tag": "0001_daffy_lady_bullseye",
 			"breakpoints": true
+		},
+		{
+			"idx": 2,
+			"version": "7",
+			"when": 1778004193178,
+			"tag": "0002_cloudy_legion",
+			"breakpoints": true
+		},
+		{
+			"idx": 3,
+			"version": "7",
+			"when": 1778009877939,
+			"tag": "0003_pretty_donald_blake",
+			"breakpoints": true
 		}
 	]
 }
