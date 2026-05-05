@@ -19,6 +19,14 @@ class ArticleService {
 		}
 		return article;
 	}
+
+	async findArticleById(id: string) {
+		const article = await this.articleRepository.findArticleById(id);
+		if (!article) {
+			throw ApiError.notFound("Article not found");
+		}
+		return article;
+	}
 }
 
 export default ArticleService;

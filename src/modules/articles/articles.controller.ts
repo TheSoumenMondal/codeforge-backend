@@ -51,6 +51,21 @@ class ArticleController {
 			error: null,
 		});
 	});
+
+	public getArticleById: RequestHandler = asyncHandler(async (req, res) => {
+		const articleId = req.params.id;
+		if (!articleId || typeof articleId !== "string") {
+			throw ApiError.invalid("Invalid article id");
+		}
+		const article = await this.articleService.findArticleById(articleId);
+
+		res.status(StatusCodes.OK).json({
+			success: true,
+			message: "Article fetched successfully",
+			data: article,
+			error: null,
+		});
+	});
 }
 
 export default ArticleController;
