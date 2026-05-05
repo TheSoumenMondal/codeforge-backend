@@ -81,6 +81,50 @@ class ArticleRepository {
 			.limit(1);
 		return esistingSlug[0] ?? null;
 	}
+
+	async findArticleById(id: string) {
+		const articleData = await db
+			.select()
+			.from(article)
+			.where(eq(article.id, id))
+			.limit(1);
+		return articleData[0] ?? null;
+	}
+
+	async getAll() {
+		const articles = await db.select().from(article);
+		return articles;
+	}
+
+	async updateArticle(articleId: string, data: ArticleDto) {
+		const updated = await db
+			.update(article)
+			.set({
+				title: data.title,
+				content: data.content,
+				cover_image: data.cover_image,
+				updated_at: new Date(),
+			})
+			.where(eq(article.id, articleId))
+			.returning();
+		return updated[0] ?? null;
+	}
+
+	async deleteArticle(articleId: string) {
+		const deleted = await db
+			.delete(article)
+			.where(eq(article.id, articleId))
+			.returning();
+		return deleted[0] ?? null;
+	}
+
+	async getArticlesByUserId(userId: string) {
+		const articles = await db
+			.select()
+			.from(article)
+			.where(eq(article.author_id, userId));
+		return articles;
+	}
 }
 
 export default ArticleRepository;
