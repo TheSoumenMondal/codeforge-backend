@@ -24,11 +24,6 @@ articleRouter.get(
 );
 
 articleRouter.get(
-	"/article/:id",
-	articleController.getArticleById.bind(articleController),
-);
-
-articleRouter.get(
 	"/article",
 	articleController.getAllArticles.bind(articleController),
 );
@@ -43,6 +38,17 @@ articleRouter.delete(
 	"/article/:id",
 	authMiddleware.isAuthenticated.bind(authMiddleware),
 	articleController.deleteArticle.bind(articleController),
+);
+
+articleRouter.get(
+	"/article/me",
+	authMiddleware.isAuthenticated.bind(authMiddleware),
+	articleController.getMyArticles.bind(articleController),
+);
+
+articleRouter.get(
+	"/article/:id",
+	articleController.getArticleById.bind(articleController),
 );
 
 export default articleRouter;

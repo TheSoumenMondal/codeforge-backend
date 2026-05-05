@@ -117,6 +117,14 @@ class ArticleRepository {
 			.returning();
 		return deleted[0] ?? null;
 	}
+
+	async getArticlesByUserId(userId: string) {
+		const articles = await db
+			.select()
+			.from(article)
+			.where(eq(article.author_id, userId));
+		return articles;
+	}
 }
 
 export default ArticleRepository;

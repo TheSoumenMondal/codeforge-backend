@@ -61,6 +61,10 @@ class ArticleService {
 
 		return this.articleRepository.deleteArticle(articleId);
 	}
+
+	async getArticlesByUserId(userId: string) {
+		return this.articleRepository.getArticlesByUserId(userId);
+	}
 }
 
 export default ArticleService;

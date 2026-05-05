@@ -129,6 +129,22 @@ class ArticleController {
 			error: null,
 		});
 	});
+
+	public getMyArticles: RequestHandler = asyncHandler(async (req, res) => {
+		const userId = req.user?.id;
+		if (!userId) {
+			throw ApiError.unauthorized("You are not authorized");
+		}
+
+		const articles = await this.articleService.getArticlesByUserId(userId);
+
+		res.status(StatusCodes.OK).json({
+			success: true,
+			message: "Your articles fetched successfully",
+			data: articles,
+			error: null,
+		});
+	});
 }
 
 export default ArticleController;
