@@ -19,7 +19,7 @@ articleRouter.post(
 );
 
 articleRouter.get(
-	"/article/:slug",
+	"/article/slug/:slug",
 	articleController.getArticleBySlug.bind(articleController),
 );
 
