@@ -109,6 +109,14 @@ class ArticleRepository {
 			.returning();
 		return updated[0] ?? null;
 	}
+
+	async deleteArticle(articleId: string) {
+		const deleted = await db
+			.delete(article)
+			.where(eq(article.id, articleId))
+			.returning();
+		return deleted[0] ?? null;
+	}
 }
 
 export default ArticleRepository;

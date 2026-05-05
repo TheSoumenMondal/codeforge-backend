@@ -108,6 +108,27 @@ class ArticleController {
 			error: null,
 		});
 	});
+
+	public deleteArticle: RequestHandler = asyncHandler(async (req, res) => {
+		const articleId = req.params.id;
+		const userId = req.user?.id;
+		if (!articleId || typeof articleId !== "string") {
+			throw ApiError.invalid("Invalid article id");
+		}
+
+		if (!userId) {
+			throw ApiError.unauthorized("You are not authorized");
+		}
+
+		await this.articleService.deleteArticle(articleId, userId);
+
+		res.status(StatusCodes.OK).json({
+			success: true,
+			message: "Article deleted successfully",
+			data: null,
+			error: null,
+		});
+	});
 }
 
 export default ArticleController;

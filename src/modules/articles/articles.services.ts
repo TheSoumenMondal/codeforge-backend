@@ -46,6 +46,21 @@ class ArticleService {
 
 		return this.articleRepository.updateArticle(articleId, data);
 	}
+
+	async deleteArticle(articleId: string, userId: string) {
+		const article = await this.articleRepository.findArticleById(articleId);
+		if (!article) {
+			throw ApiError.notFound("Article not found");
+		}
+
+		if (article.author_id !== userId) {
+			throw ApiError.unauthorized(
+				"You are not authorized to delete this article",
+			);
+		}
+
+		return this.articleRepository.deleteArticle(articleId);
+	}
 }
 
 export default ArticleService;

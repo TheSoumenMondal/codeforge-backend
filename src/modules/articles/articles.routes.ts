@@ -39,4 +39,10 @@ articleRouter.put(
 	articleController.updateArticle.bind(articleController),
 );
 
+articleRouter.delete(
+	"/article/:id",
+	authMiddleware.isAuthenticated.bind(authMiddleware),
+	articleController.deleteArticle.bind(articleController),
+);
+
 export default articleRouter;
