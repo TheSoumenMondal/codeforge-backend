@@ -95,6 +95,20 @@ class ArticleRepository {
 		const articles = await db.select().from(article);
 		return articles;
 	}
+
+	async updateArticle(articleId: string, data: ArticleDto) {
+		const updated = await db
+			.update(article)
+			.set({
+				title: data.title,
+				content: data.content,
+				cover_image: data.cover_image,
+				updated_at: new Date(),
+			})
+			.where(eq(article.id, articleId))
+			.returning();
+		return updated[0] ?? null;
+	}
 }
 
 export default ArticleRepository;

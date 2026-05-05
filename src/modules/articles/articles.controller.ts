@@ -76,6 +76,38 @@ class ArticleController {
 			error: null,
 		});
 	});
+
+	public updateArticle: RequestHandler = asyncHandler(async (req, res) => {
+		const articleId = req.params.id;
+		const userId = req.user?.id;
+		const incomingData = await ArticleDto.safeParseAsync(req.body);
+		if (!incomingData.success) {
+			throw ApiError.invalid(
+				incomingData.error.issues.map((issue) => issue.message).join(","),
+			);
+		}
+
+		if (!articleId || typeof articleId !== "string") {
+			throw ApiError.invalid("Invalid article id");
+		}
+
+		if (!userId) {
+			throw ApiError.unauthorized("You are not authorized");
+		}
+
+		const updatedArticle = await this.articleService.updateArticle(
+			articleId,
+			userId,
+			incomingData.data,
+		);
+
+		res.status(StatusCodes.OK).json({
+			success: true,
+			message: "Article updated successfully",
+			data: updatedArticle,
+			error: null,
+		});
+	});
 }
 
 export default ArticleController;

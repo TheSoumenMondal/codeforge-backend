@@ -33,4 +33,10 @@ articleRouter.get(
 	articleController.getAllArticles.bind(articleController),
 );
 
+articleRouter.put(
+	"/article/:id",
+	authMiddleware.isAuthenticated.bind(authMiddleware),
+	articleController.updateArticle.bind(articleController),
+);
+
 export default articleRouter;

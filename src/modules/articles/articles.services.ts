@@ -31,6 +31,21 @@ class ArticleService {
 	async getAllArticles() {
 		return this.articleRepository.getAll();
 	}
+
+	async updateArticle(articleId: string, userId: string, data: ArticleDto) {
+		const article = await this.articleRepository.findArticleById(articleId);
+		if (!article) {
+			throw ApiError.notFound("Article not found");
+		}
+
+		if (article.author_id !== userId) {
+			throw ApiError.unauthorized(
+				"You are not authorized to update this article",
+			);
+		}
+
+		return this.articleRepository.updateArticle(articleId, data);
+	}
 }
 
 export default ArticleService;
