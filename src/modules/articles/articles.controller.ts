@@ -145,6 +145,17 @@ class ArticleController {
 			error: null,
 		});
 	});
+
+	public getAuthors: RequestHandler = asyncHandler(async (req, res) => {
+		const authors = await this.articleService.getAuthors();
+
+		res.status(StatusCodes.OK).json({
+			success: true,
+			message: "Authors fetched successfully",
+			data: authors,
+			error: null,
+		});
+	});
 }
 
 export default ArticleController;

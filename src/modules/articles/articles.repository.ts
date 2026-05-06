@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { db } from "../../common/config/db/index.js";
 import { article } from "../../common/config/db/schema/article.js";
 import { user } from "../../common/config/db/schema/user.js";
@@ -144,6 +144,33 @@ class ArticleRepository {
 			.from(article)
 			.where(eq(article.author_id, userId));
 		return articles;
+	}
+
+	async getAuthors() {
+		return this.getTopAuthors(10);
+	}
+
+	async getTopAuthors(limit = 10) {
+		const authors = await db
+			.select({
+				id: user.id,
+				name: user.name,
+				avatar_url: user.avatar_url,
+				article_count: sql<number>`count(${article.id})`,
+			})
+			.from(user)
+			.leftJoin(article, eq(article.author_id, user.id))
+			.groupBy(user.id)
+			.having(sql`count(${article.id}) > 0`)
+			.orderBy(sql`count(${article.id}) desc`)
+			.limit(limit);
+
+		return authors.map((a: any) => ({
+			id: a.id,
+			name: a.name,
+			avatar_url: a.avatar_url,
+			article_count: Number(a.article_count ?? 0),
+		}));
 	}
 }
 

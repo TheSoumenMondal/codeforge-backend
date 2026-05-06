@@ -47,6 +47,11 @@ articleRouter.get(
 );
 
 articleRouter.get(
+	"/article/top-authors",
+	articleController.getAuthors.bind(articleController),
+);
+
+articleRouter.get(
 	"/article/:id",
 	articleController.getArticleById.bind(articleController),
 );
