@@ -74,12 +74,12 @@ class ArticleRepository {
 	}
 
 	async findBySlug(slug: string) {
-		const esistingSlug = await db
+		const existingSlug = await db
 			.select()
 			.from(article)
 			.where(eq(article.slug, slug))
 			.limit(1);
-		return esistingSlug[0] ?? null;
+		return existingSlug[0] ?? null;
 	}
 
 	async findArticleById(id: string) {
@@ -92,7 +92,27 @@ class ArticleRepository {
 	}
 
 	async getAll() {
-		const articles = await db.select().from(article);
+		const articles = await db
+			.select({
+				id: article.id,
+				title: article.title,
+				slug: article.slug,
+				content: article.content,
+				excerpt: article.excerpt,
+				cover_image: article.cover_image,
+				status: article.status,
+				views: article.views,
+				created_at: article.created_at,
+				updated_at: article.updated_at,
+				published_at: article.published_at,
+				author: {
+					id: user.id,
+					name: user.name,
+					avatar_url: user.avatar_url,
+				},
+			})
+			.from(article)
+			.leftJoin(user, eq(article.author_id, user.id));
 		return articles;
 	}
 
