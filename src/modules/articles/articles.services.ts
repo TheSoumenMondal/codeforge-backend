@@ -65,6 +65,10 @@ class ArticleService {
 	async getArticlesByUserId(userId: string) {
 		return this.articleRepository.getArticlesByUserId(userId);
 	}
+
+	async getAuthors() {
+		return this.articleRepository.getAuthors();
+	}
 }
 
 export default ArticleService;
