@@ -43,6 +43,32 @@ class SubmissionController {
 			message: "Submission created successfully",
 		});
 	});
+
+	public getSubmissionById: RequestHandler = asyncHandler(async (req, res) => {
+		const userId = req.user?.id;
+		if (!userId) {
+			throw ApiError.unauthorized("User not authenticated");
+		}
+
+		const submissionId = req.params.id;
+		if (!submissionId || typeof submissionId !== "string") {
+			throw ApiError.invalid("Invalid submission ID");
+		}
+
+		const submission = await this.submissionService.getSubmissionById(
+			submissionId,
+			userId,
+		);
+		if (!submission) {
+			throw ApiError.notFound("Submission not found");
+		}
+
+		res.status(200).json({
+			success: true,
+			data: submission,
+			message: "Submission retrieved successfully",
+		});
+	});
 }
 
 export { SubmissionController };

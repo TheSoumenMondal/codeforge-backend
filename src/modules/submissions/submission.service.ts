@@ -61,6 +61,23 @@ class SubmissionService {
 
 		return submission;
 	}
+
+	async getSubmissionById(submissionId: string, userId: string) {
+		const submission =
+			await this.submissionRepository.getSubmissionById(submissionId);
+
+		if (!submission) {
+			throw ApiError.notFound("Submission not found");
+		}
+
+		if (submission.user_id !== userId) {
+			throw ApiError.unauthorized(
+				"User not authorized to view this submission",
+			);
+		}
+
+		return submission;
+	}
 }
 
 export { SubmissionService };
