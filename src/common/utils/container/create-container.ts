@@ -19,7 +19,7 @@ export async function createContainer(option: ContainerConfig) {
 			HostConfig: {
 				Memory: option.memoryLimit,
 				AutoRemove: true,
-				PidsLimit: 10,
+				PidsLimit: 512,
 				CpuQuota: 50000,
 				CpuPeriod: 100000,
 				SecurityOpt: ["no-new-privileges"],

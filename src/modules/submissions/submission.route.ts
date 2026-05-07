@@ -28,6 +28,12 @@ submissionRouter.get(
 	}),
 );
 
+submissionRouter.get(
+	"/submission/:id",
+	authMiddleware.isAuthenticated.bind(authMiddleware),
+	submissionController.getSubmissionById.bind(submissionController),
+);
+
 submissionRouter.post(
 	"/submission/:problem_id",
 	authMiddleware.isAuthenticated.bind(authMiddleware),
