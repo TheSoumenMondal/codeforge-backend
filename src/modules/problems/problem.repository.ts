@@ -194,6 +194,52 @@ class ProblemRepository {
 				and(eq(problemLikes.userId, userId), eq(problemLikes.problemId, id)),
 			);
 	}
+
+	async getMyProblems(userId: string) {
+		const problemData = await db
+			.select({
+				id: problem.id,
+				title: problem.title,
+				description: problem.description,
+				difficulty: problem.difficulty,
+				created_by: problem.created_by,
+				created_at: problem.created_at,
+				updated_at: problem.updated_at,
+			})
+			.from(problem)
+			.where(eq(problem.created_by, userId));
+
+		const problemsWithDetails = await Promise.all(
+			problemData.map(async (p) => {
+				const testCaseRows = await db
+					.select()
+					.from(test_case)
+					.where(eq(test_case.problem_id, p.id));
+
+				const codeStubs = await db
+					.select()
+					.from(code_stub)
+					.where(eq(code_stub.problem_id, p.id));
+
+				const testCases = testCaseRows.map((r) => ({
+					id: r.id,
+					input: r.input,
+					output: r.expected_output,
+					totalExecutionTime: r.total_execution_time,
+					createdAt: r.created_at,
+					updatedAt: r.updated_at,
+				}));
+
+				return {
+					...p,
+					code_stubs: codeStubs,
+					test_cases: testCases,
+				};
+			}),
+		);
+
+		return problemsWithDetails;
+	}
 }
 
 export default ProblemRepository;
