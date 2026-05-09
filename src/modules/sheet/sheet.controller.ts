@@ -39,6 +39,16 @@ class SheetController {
 			error: null,
 		});
 	});
+
+	public getAllPublicSheets: RequestHandler = asyncHandler(async (req, res) => {
+		const result = await this.sheetService.getAllPublicSheets();
+		res.status(StatusCodes.OK).json({
+			success: true,
+			message: "Public sheets retrieved successfully",
+			data: result,
+			error: null,
+		});
+	});
 }
 
 export { SheetController };

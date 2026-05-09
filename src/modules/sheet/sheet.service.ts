@@ -21,6 +21,11 @@ class SheetService {
 		const result = await this.sheetRepository.createSheet(data, userId);
 		return result;
 	}
+
+	async getAllPublicSheets() {
+		const result = await this.sheetRepository.getAllPublicSheets();
+		return result;
+	}
 }
 
 export { SheetService };

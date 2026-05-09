@@ -22,6 +22,14 @@ class SheetRepository {
 			.returning();
 		return result;
 	}
+
+	async getAllPublicSheets() {
+		const result = await db
+			.select()
+			.from(sheet)
+			.where(eq(sheet.visibility, "public"));
+		return result;
+	}
 }
 
 export { SheetRepository };

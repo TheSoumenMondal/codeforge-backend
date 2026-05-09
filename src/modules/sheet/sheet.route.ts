@@ -18,4 +18,9 @@ sheetRouter.post(
 	sheetController.createSheet.bind(sheetController),
 );
 
+sheetRouter.get(
+	"/sheet",
+	sheetController.getAllPublicSheets.bind(sheetController),
+);
+
 export { sheetRouter };
