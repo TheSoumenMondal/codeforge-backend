@@ -26,6 +26,14 @@ class SheetService {
 		const result = await this.sheetRepository.getAllPublicSheets();
 		return result;
 	}
+
+	async getMySheets(userId: string) {
+		if (!userId) {
+			throw ApiError.unauthorized("You are not authorized.");
+		}
+		const result = await this.sheetRepository.getMySheets(userId);
+		return result;
+	}
 }
 
 export { SheetService };

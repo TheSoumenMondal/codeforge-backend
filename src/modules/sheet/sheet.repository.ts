@@ -30,6 +30,14 @@ class SheetRepository {
 			.where(eq(sheet.visibility, "public"));
 		return result;
 	}
+
+	async getMySheets(userId: string) {
+		const result = await db
+			.select()
+			.from(sheet)
+			.where(eq(sheet.created_by, userId));
+		return result;
+	}
 }
 
 export { SheetRepository };

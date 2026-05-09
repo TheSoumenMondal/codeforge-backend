@@ -23,4 +23,10 @@ sheetRouter.get(
 	sheetController.getAllPublicSheets.bind(sheetController),
 );
 
+sheetRouter.get(
+	"/sheet/me",
+	authMiddleware.isAuthenticated.bind(authMiddleware),
+	sheetController.getMySheets.bind(sheetController),
+);
+
 export { sheetRouter };

@@ -49,6 +49,20 @@ class SheetController {
 			error: null,
 		});
 	});
+
+	public getMySheets: RequestHandler = asyncHandler(async (req, res) => {
+		const userId = req.user?.id;
+		if (!userId) {
+			throw ApiError.unauthorized("You are not authorized");
+		}
+		const result = await this.sheetService.getMySheets(userId);
+		res.status(StatusCodes.OK).json({
+			success: true,
+			message: "Your sheets retrieved successfully",
+			data: result,
+			error: null,
+		});
+	});
 }
 
 export { SheetController };
