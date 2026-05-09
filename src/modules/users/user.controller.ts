@@ -1,0 +1,102 @@
+import type { RequestHandler } from "express";
+import { StatusCodes } from "http-status-codes";
+import asyncHandler from "../../common/utils/async-handler.js";
+import { ApiError } from "../../common/utils/error/api.error.js";
+import { createUserDto, updateUserDto } from "./dto/user.dto.js";
+import type UserService from "./user.service.js";
+
+class UserController {
+	private userService: UserService;
+
+	constructor(userService: UserService) {
+		this.userService = userService;
+	}
+
+	create: RequestHandler = asyncHandler(async (req, res) => {
+		const incomingData = req.body;
+		const parsedData = await createUserDto.safeParseAsync(incomingData);
+
+		if (!parsedData.success) {
+			throw ApiError.invalid(
+				`Invalid data : ${parsedData.error.issues
+					.map((issue) => `${issue.path.join(".")}: ${issue.message}`)
+					.join(", ")}`,
+			);
+		}
+
+		const createdUser = await this.userService.create(parsedData.data);
+
+		res.status(StatusCodes.CREATED).json({
+			success: true,
+			data: createdUser,
+			message: "User created successfully",
+			error: null,
+		});
+	});
+
+	getProfile: RequestHandler = asyncHandler(async (req, res) => {
+		const userId = req.user?.id;
+		if (!userId) {
+			throw ApiError.unauthorized("You are not authenticated.");
+		}
+		const userProfile = await this.userService.getProfile(userId);
+		res.status(StatusCodes.OK).json({
+			success: true,
+			data: userProfile,
+			message: "User profile retrieved successfully",
+			error: null,
+		});
+	});
+
+	updateProfile: RequestHandler = asyncHandler(async (req, res) => {
+		const incomingData = req.body;
+		const parsedData = await updateUserDto.safeParseAsync(incomingData);
+
+		if (!parsedData.success) {
+			throw ApiError.invalid(
+				`Invalid data : ${parsedData.error.issues.map((issue) => `${issue.path.join(".")}: ${issue.message}`).join(", ")}`,
+			);
+		}
+
+		const userId = req.user?.id;
+		if (!userId) {
+			throw ApiError.unauthorized("You are not authenticated.");
+		}
+
+		const updatedProfile = await this.userService.updateProfile(
+			userId,
+			parsedData.data,
+		);
+		res.status(StatusCodes.OK).json({
+			success: true,
+			data: updatedProfile,
+			message: "User profile updated successfully",
+			error: null,
+		});
+	});
+
+	addAvatar: RequestHandler = asyncHandler(async (req, res) => {
+		const userId = req.user?.id;
+		if (!userId) {
+			throw ApiError.unauthorized("You are not authenticated.");
+		}
+		if (!req.file) {
+			throw ApiError.invalid("File not found.");
+		}
+
+		const result = await this.userService.addAvatar(
+			userId,
+			req.file?.buffer,
+			req.file?.originalname,
+			req.file?.mimetype,
+		);
+		res.status(StatusCodes.OK).json({
+			success: true,
+			data: result,
+			message: "Avatar uploaded successfully",
+			error: null,
+		});
+	});
+}
+
+export default UserController;

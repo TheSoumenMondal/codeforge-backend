@@ -15,6 +15,10 @@ const envSchema = z.object({
 	LOGGER_LEVEL: z
 		.enum(["trace", "debug", "info", "warn", "error", "fatal"])
 		.default("info"),
+	IMAGEKIT_PRIVATE_KEY: z.string(),
+	REDIS_HOST: z.string(),
+	REDIS_PORT: z.string().default("6379"),
+	CORS_ORIGIN: z.string(),
 });
 
 type EnvConfig = z.infer<typeof envSchema>;

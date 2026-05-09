@@ -46,6 +46,23 @@ class ApiError extends Error {
 	static invalid(message: string = "Invalid"): ApiError {
 		return new ApiError(message, StatusCodes.BAD_REQUEST, true, "InvalidError");
 	}
+
+	static conflict(message: string = "Conflict"): ApiError {
+		return new ApiError(message, StatusCodes.CONFLICT, true, "ConflictError");
+	}
+
+	static unauthorized(message: string = "Unauthorized"): ApiError {
+		return new ApiError(
+			message,
+			StatusCodes.UNAUTHORIZED,
+			true,
+			"UnauthorizedError",
+		);
+	}
+
+	static forbidden(message: string = "Forbidden"): ApiError {
+		return new ApiError(message, StatusCodes.FORBIDDEN, true, "ForbiddenError");
+	}
 }
 
 export { ApiError };

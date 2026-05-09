@@ -1,0 +1,2 @@
+ALTER TABLE "post" ADD CONSTRAINT "images_max_3" CHECK (array_length("post"."images", 1) <= 3);--> statement-breakpoint
+ALTER TABLE "post" ADD CONSTRAINT "tags_max_5" CHECK (array_length("post"."tags", 1) <= 5);
