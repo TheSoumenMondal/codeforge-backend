@@ -34,6 +34,26 @@ class SheetService {
 		const result = await this.sheetRepository.getMySheets(userId);
 		return result;
 	}
+
+	async addProblemToSheet(sheetId: string, problemId: string, userId: string) {
+		const existingSheet = await this.sheetRepository.getSheetById(sheetId);
+
+		if (!existingSheet) {
+			throw ApiError.notFound("Sheet not found.");
+		}
+
+		if (existingSheet.creator?.id !== userId) {
+			throw ApiError.unauthorized(
+				"You are not authorized to modify this sheet.",
+			);
+		}
+
+		const result = await this.sheetRepository.addProblemToSheet(
+			sheetId,
+			problemId,
+		);
+		return result;
+	}
 }
 
 export { SheetService };

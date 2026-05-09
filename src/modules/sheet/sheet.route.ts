@@ -29,4 +29,10 @@ sheetRouter.get(
 	sheetController.getMySheets.bind(sheetController),
 );
 
+sheetRouter.post(
+	"/sheet/add-problem",
+	authMiddleware.isAuthenticated.bind(authMiddleware),
+	sheetController.addProblemToSheet.bind(sheetController),
+);
+
 export { sheetRouter };

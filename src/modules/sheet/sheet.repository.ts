@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import { db } from "../../common/config/db/index.js";
-import { sheet } from "../../common/config/db/schema/sheet.js";
+import { sheet, sheetQuestion } from "../../common/config/db/schema/sheet.js";
 import { user } from "../../common/config/db/schema/user.js";
 import type { SheetDtoType } from "./dto/sheet.dto.js";
 
@@ -53,6 +53,45 @@ class SheetRepository {
 			.from(sheet)
 			.where(eq(sheet.created_by, userId));
 		return result;
+	}
+
+	async addProblemToSheet(sheetId: string, problemId: string) {
+		{
+			const result = await db
+				.insert(sheetQuestion)
+				.values({
+					sheet_id: sheetId,
+					problem_id: problemId,
+				})
+				.returning()
+				.onConflictDoNothing();
+			return result;
+		}
+	}
+
+	async getSheetById(sheetId: string) {
+		const result = await db
+			.select({
+				id: sheet.id,
+				title: sheet.title,
+				description: sheet.description,
+				visibility: sheet.visibility,
+				categories: sheet.categories,
+				creator: {
+					id: user.id,
+					email: user.email,
+					avatar: user.avatar_url,
+					name: user.name,
+				},
+				created_at: sheet.created_at,
+				updated_at: sheet.updated_at,
+			})
+			.from(sheet)
+			.leftJoin(user, eq(sheet.created_by, user.id))
+			.where(eq(sheet.id, sheetId))
+			.limit(1);
+
+		return result[0];
 	}
 }
 

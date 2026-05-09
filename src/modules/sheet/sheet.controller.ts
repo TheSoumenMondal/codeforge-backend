@@ -63,6 +63,31 @@ class SheetController {
 			error: null,
 		});
 	});
+
+	public addProblemToSheet: RequestHandler = asyncHandler(async (req, res) => {
+		const userId = req.user?.id;
+		if (!userId) {
+			throw ApiError.unauthorized("You are not authorized");
+		}
+
+		const { sheetId, problemId } = req.body;
+
+		if (!sheetId || !problemId) {
+			throw ApiError.badRequest("Sheet ID and Problem ID are required.");
+		}
+
+		const result = await this.sheetService.addProblemToSheet(
+			sheetId,
+			problemId,
+			userId,
+		);
+		res.status(StatusCodes.OK).json({
+			success: true,
+			message: "Problem added to sheet successfully",
+			data: result,
+			error: null,
+		});
+	});
 }
 
 export { SheetController };

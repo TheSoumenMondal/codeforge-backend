@@ -6,7 +6,7 @@ import {
 	uuid,
 	varchar,
 } from "drizzle-orm/pg-core";
-
+import { problem } from "./problem.js";
 import { user } from "./user.js";
 
 export const sheet = pgTable("sheet", {
@@ -46,17 +46,16 @@ export const sheetQuestion = pgTable(
 				onDelete: "cascade",
 			}),
 
+		problem_id: uuid("problem_id").references(() => problem.id, {
+			onDelete: "cascade",
+		}),
 		created_at: timestamp("created_at").defaultNow(),
 
 		updated_at: timestamp("updated_at")
 			.defaultNow()
 			.$onUpdateFn(() => new Date()),
 	},
-	(table) => {
-		return {
-			unique_sheet_question: uniqueIndex("unique_sheet_question").on(
-				table.sheet_id,
-			),
-		};
-	},
+	(table) => [
+		uniqueIndex("unique_sheet_question").on(table.sheet_id, table.problem_id),
+	],
 );
