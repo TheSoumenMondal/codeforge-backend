@@ -54,6 +54,19 @@ class SheetService {
 		);
 		return result;
 	}
+
+	async getSheetById(sheetId: string) {
+		const result = await this.sheetRepository.getSheetById(sheetId);
+		if (!result) {
+			throw ApiError.notFound("Sheet not found.");
+		}
+		return result;
+	}
+
+	async getProblemsBySheetId(sheetId: string) {
+		const result = await this.sheetRepository.getProblemsBySheetId(sheetId);
+		return result;
+	}
 }
 
 export { SheetService };

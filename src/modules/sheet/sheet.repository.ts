@@ -1,5 +1,6 @@
 import { eq } from "drizzle-orm";
 import { db } from "../../common/config/db/index.js";
+import { problem } from "../../common/config/db/schema/problem.js";
 import { sheet, sheetQuestion } from "../../common/config/db/schema/sheet.js";
 import { user } from "../../common/config/db/schema/user.js";
 import type { SheetDtoType } from "./dto/sheet.dto.js";
@@ -92,6 +93,23 @@ class SheetRepository {
 			.limit(1);
 
 		return result[0];
+	}
+
+	async getProblemsBySheetId(sheetId: string) {
+		const result = await db
+			.select({
+				id: problem.id,
+				title: problem.title,
+				description: problem.description,
+				difficulty: problem.difficulty,
+				created_by: problem.created_by,
+				created_at: problem.created_at,
+				updated_at: problem.updated_at,
+			})
+			.from(sheetQuestion)
+			.leftJoin(problem, eq(sheetQuestion.problem_id, problem.id))
+			.where(eq(sheetQuestion.sheet_id, sheetId));
+		return result;
 	}
 }
 

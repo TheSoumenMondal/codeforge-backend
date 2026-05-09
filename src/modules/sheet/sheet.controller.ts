@@ -70,7 +70,8 @@ class SheetController {
 			throw ApiError.unauthorized("You are not authorized");
 		}
 
-		const { sheetId, problemId } = req.body;
+		const sheetId = req.params.id as string;
+		const { problemId } = req.body;
 
 		if (!sheetId || !problemId) {
 			throw ApiError.badRequest("Sheet ID and Problem ID are required.");
@@ -81,13 +82,47 @@ class SheetController {
 			problemId,
 			userId,
 		);
-		res.status(StatusCodes.OK).json({
+		res.status(StatusCodes.CREATED).json({
 			success: true,
 			message: "Problem added to sheet successfully",
 			data: result,
 			error: null,
 		});
 	});
+
+	public getSheetById: RequestHandler = asyncHandler(async (req, res) => {
+		const id = req.params.id as string;
+
+		if (!id) {
+			throw ApiError.badRequest("Sheet ID is required.");
+		}
+
+		const result = await this.sheetService.getSheetById(id);
+		res.status(StatusCodes.OK).json({
+			success: true,
+			message: "Sheet retrieved successfully",
+			data: result,
+			error: null,
+		});
+	});
+
+	public getProblemsBySheetId: RequestHandler = asyncHandler(
+		async (req, res) => {
+			const id = req.params.id as string;
+
+			if (!id) {
+				throw ApiError.badRequest("Sheet ID is required.");
+			}
+
+			const result = await this.sheetService.getProblemsBySheetId(id);
+			res.status(StatusCodes.OK).json({
+				success: true,
+				message: "Problems retrieved successfully",
+				data: result,
+				error: null,
+			});
+		},
+	);
 }
 
 export { SheetController };
