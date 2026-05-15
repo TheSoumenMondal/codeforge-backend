@@ -27,9 +27,7 @@
 	"editor.semanticHighlighting.enabled": true,
 	"editor.bracketPairColorization.enabled": true,
 	"editor.detectIndentation": false,
-
 	"biome.enabled": true,
-
 	"[javascript]": {
 		"editor.defaultFormatter": "biomejs.biome"
 	},
@@ -49,7 +47,6 @@
 	"[css]": {
 		"editor.defaultFormatter": "biomejs.biome"
 	},
-
 	"js/ts.tsdk.path": "node_modules/typescript/lib",
 	"js/ts.tsdk.promptToUseWorkspaceVersion": true,
 	"js/ts.updateImportsOnFileMove.enabled": "always",
@@ -59,7 +56,6 @@
 	"js/ts.inlayHints.parameterNames.enabled": "all",
 	"js/ts.inlayHints.variableTypes.enabled": true,
 	"js/ts.inlayHints.propertyDeclarationTypes.enabled": true,
-
 	"files.autoSave": "onFocusChange",
 	"files.trimTrailingWhitespace": true,
 	"files.trimFinalNewlines": true,
@@ -79,7 +75,6 @@
 		"**/.turbo": true,
 		"**/.vercel": true
 	},
-
 	"search.exclude": {
 		"**/node_modules": true,
 		"**/dist": true,
@@ -88,11 +83,9 @@
 		"**/.next": true,
 		"**/.turbo": true
 	},
-
 	"git.ignoreLimitWarning": true,
 	"git.autofetch": true,
 	"git.confirmSync": false,
-
 	"terminal.integrated.defaultProfile.linux": "bash",
 	"terminal.integrated.defaultProfile.osx": "zsh",
 	"terminal.integrated.defaultProfile.windows": "PowerShell",
@@ -106,16 +99,15 @@
 	"workbench.sideBar.location": "left",
 	"window.zoomLevel": 0,
 	"window.title": "${rootName}${separator}${activeEditorMedium}",
-
 	"debug.openDebug": "neverOpen",
-
 	"npm.autoDetect": "on",
-
 	"js/ts.referencesCodeLens.showOnAllFunctions": true,
 	"js/ts.implementationsCodeLens.enabled": true,
-
 	"emmet.includeLanguages": {
 		"javascript": "javascriptreact",
 		"typescript": "typescriptreact"
+	},
+	"[jsonc]": {
+		"editor.defaultFormatter": "vscode.json-language-features"
 	}
 }

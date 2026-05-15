@@ -417,6 +417,21 @@ class ProblemController {
 			error: null,
 		});
 	});
+
+	public getMyProblems: RequestHandler = asyncHandler(async (req, res) => {
+		const userId = req.user?.id;
+		if (!userId) {
+			throw ApiError.unauthorized("User not authenticated");
+		}
+
+		const problems = await this.problemService.getMyProblems(userId);
+		res.status(StatusCodes.OK).json({
+			success: true,
+			message: "My problems retrieved successfully",
+			data: problems,
+			error: null,
+		});
+	});
 }
 
 export default ProblemController;
