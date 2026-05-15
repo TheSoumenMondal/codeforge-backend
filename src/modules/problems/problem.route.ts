@@ -45,6 +45,13 @@ problemRouter.get(
 	"/problem",
 	problemController.getProblemByFilter.bind(problemController),
 );
+
+problemRouter.get(
+	"/problem/my-problems",
+	authMiddleware.isAuthenticated.bind(authMiddleware),
+	problemController.getMyProblems.bind(problemController),
+);
+
 problemRouter.get(
 	"/problem/:id",
 	problemController.getById.bind(problemController),

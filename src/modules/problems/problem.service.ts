@@ -111,6 +111,11 @@ class ProblemService {
 		}
 		return;
 	}
+
+	async getMyProblems(userId: string) {
+		const problems = await this.problemRepository.getMyProblems(userId);
+		return problems;
+	}
 }
 
 export default ProblemService;

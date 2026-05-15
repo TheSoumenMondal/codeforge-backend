@@ -5,29 +5,15 @@
 		{
 			"idx": 0,
 			"version": "7",
-			"when": 1777649141464,
-			"tag": "0000_wise_robbie_robertson",
+			"when": 1778342946929,
+			"tag": "0000_daffy_scorpion",
 			"breakpoints": true
 		},
 		{
 			"idx": 1,
 			"version": "7",
-			"when": 1777921590594,
-			"tag": "0001_daffy_lady_bullseye",
-			"breakpoints": true
-		},
-		{
-			"idx": 2,
-			"version": "7",
-			"when": 1778004193178,
-			"tag": "0002_cloudy_legion",
-			"breakpoints": true
-		},
-		{
-			"idx": 3,
-			"version": "7",
-			"when": 1778009877939,
-			"tag": "0003_pretty_donald_blake",
+			"when": 1778358090314,
+			"tag": "0001_legal_imperial_guard",
 			"breakpoints": true
 		}
 	]

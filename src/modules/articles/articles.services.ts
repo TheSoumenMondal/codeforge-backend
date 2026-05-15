@@ -38,7 +38,7 @@ class ArticleService {
 			throw ApiError.notFound("Article not found");
 		}
 
-		if (article.author_id !== userId) {
+		if (article.author?.id !== userId) {
 			throw ApiError.unauthorized(
 				"You are not authorized to update this article",
 			);
@@ -53,7 +53,7 @@ class ArticleService {
 			throw ApiError.notFound("Article not found");
 		}
 
-		if (article.author_id !== userId) {
+		if (article.author?.id !== userId) {
 			throw ApiError.unauthorized(
 				"You are not authorized to delete this article",
 			);
