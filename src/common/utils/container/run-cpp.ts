@@ -1,10 +1,10 @@
 import Docker from "dockerode";
+import { logger } from "../../config/logger/pino-logger.js";
 import { DOCKER_IMAGES } from "../../constants/images.js";
 import type {
 	CodeExecutionResponse,
 	CodeExecutionStrategy,
 } from "../../type/execution.js";
-
 import { createContainer } from "./create-container.js";
 import { decodeDockerStream } from "./docker-helper.js";
 import { pullDockerImage } from "./pull-container.js";
@@ -125,7 +125,14 @@ export class CppExecutor implements CodeExecutionStrategy {
 				memoryUsed: 0,
 			};
 		} finally {
-			await container.stop();
+			try {
+				await container.stop({ t: 0 });
+			} catch (error) {
+				// Container might have already stopped, ignore errors during stop
+				logger.warn(
+					`Error stopping container: ${error instanceof Error ? error.message : error}`,
+				);
+			}
 		}
 	}
 }
