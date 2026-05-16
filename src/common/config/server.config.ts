@@ -16,7 +16,8 @@ const envSchema = z.object({
 		.enum(["trace", "debug", "info", "warn", "error", "fatal"])
 		.default("info"),
 	IMAGEKIT_PRIVATE_KEY: z.string(),
-	REDIS_URL: z.string().url(),
+	REDIS_HOST: z.string(),
+	REDIS_PORT: z.string(),
 	CORS_ORIGIN: z.string(),
 });
 
