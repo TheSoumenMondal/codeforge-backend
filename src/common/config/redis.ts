@@ -3,8 +3,11 @@ import { logger } from "./logger/pino-logger.js";
 import { envConfig } from "./server.config.js";
 
 const createRedisClient = () => {
-	const client = new Redis(envConfig.REDIS_URL, {
+	const client = new Redis({
+		host: envConfig.REDIS_HOST,
+		port: parseInt(envConfig.REDIS_PORT, 10),
 		maxRetriesPerRequest: null,
+		enableReadyCheck: false,
 	});
 
 	client.on("connect", () => {
